@@ -136,10 +136,10 @@ func getnamesurname() {
 	surname = strings.TrimSpace(surname)
 }
 */
-/*
-package main
 
-import (
+//package main
+
+/*import (
 	"fmt"
 	"net/http"
 )
@@ -167,6 +167,7 @@ func signup(w http.ResponseWriter, r *http.Request) {
 	var userby Users
 
 	if userby.UName == "" || userby.Email == "" || userby.Pwd == "" || userby.PwdConfirm == "" {
+		userregister = append(userregister, Users{})
 		fmt.Fprintf(w, "Information cannot be empty")
 	} else if userby.Pwd != userby.PwdConfirm {
 		fmt.Fprintf(w, "Passwords do not match")
@@ -191,12 +192,13 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/signup", signup)
 	mux.HandleFunc("/login", login)
-	err := http.ListenAndServe(":9000", mux)
+	err := http.ListenAndServe(":9999", mux)
 	if err != nil {
 		panic(err)
 	}
 }
-
+*/
+/*
 ------
 ıd ıd ıd
 
@@ -206,6 +208,50 @@ var userids = []userid{
 
 type userid struct {
 	id int
+}
+
+
+
+
+
+
+-----------------
+func signup(c *gin.Context) {
+	var userby Users
+	err := c.Bind(&userby)
+
+	if err != nil || userby.UName != "" || userby.Pwd != "" || userby.Name != "" || userby.SName != "" {
+		userregister = append(userregister, userby)
+		fmt.Fprint(w, "true", "Succesful signup", userby.Name)
+	}
+	if userby.UName == "" || userby.Pwd == "" || userby.Name == "" || userby.SName == "" {
+		fmt.Fprint(w, "false ", "Information cannot be empty")
+		return
+	}
+	if err == nil && userby.UName != "" && userby.Pwd != "" && userby.Name != "" && userby.SName != "" {
+		userregister = append(userregister, userby)
+		c.JSON(http.StatusCreated, gin.H{"message": "true"})
+		c.JSON(http.StatusCreated, gin.H{"message": "Succesful signup"})
+		c.JSON(http.StatusCreated, gin.H{"message": userby.Name})
+		return
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Student cannot be created "})
+		return
+	}
+}
+
+//func listusers(w http.ResponseWriter, r *http.Request) {
+//var list Users
+//fmt.Fprint(w, list)
+//}
+
+func main() {
+	r := gin.Default()
+	r.POST("/signup", signup)
+	err := r.Run("localhost:9000")
+	if err != nil {
+		panic(err)
+	}
 }
 
 */
