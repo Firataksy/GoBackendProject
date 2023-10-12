@@ -44,7 +44,6 @@ func signup(w http.ResponseWriter, r *http.Request) {
 func login(w http.ResponseWriter, r *http.Request) {
 	var userbyl Userlogin
 	var userbys Usersign
-
 	w.Header().Set("Content-Type", "application/json")
 
 	if userbyl.UName != "" && userbyl.Pwd != "" {
