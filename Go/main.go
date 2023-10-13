@@ -29,36 +29,65 @@ type Userlogin struct {
 func signup(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var userby Usersign
-	json.NewEncoder(w).Encode(&userby)
-
+	err := json.NewDecoder(r.Body).Decode(&userby)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	usersign = append(usersign, userby)
 	if userby.UName != "" && userby.Pwd != "" && userby.Name != "" && userby.SName != "" {
-		usersign = append(usersign, userby)
-		fmt.Fprint(w, "true ", "Succesful signup", userby.Name)
+
+		fmt.Fprint(w, `{"success": true, "message": "Successful signup"}`, userby.Name)
 		return
 	} else {
-		fmt.Fprint(w, "false ", "Information cannot be empty")
+		fmt.Fprint(w, `{"success": true, "message": " Information cannot be empty"}`)
 		return
 	}
 }
-
 func login(w http.ResponseWriter, r *http.Request) {
+	var userbyl Userlogin
+	w.Header().Set("Content-Type", "application/json")
+
+	err := json.NewDecoder(r.Body).Decode(&userbyl)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var users bool
+	for _, user := range usersign {
+		if user.UName == userbyl.UName && user.Pwd == userbyl.Pwd {
+			users = true
+			break
+		}
+	}
+
+	if users {
+		fmt.Fprint(w, `{"success": true, "message": "Successful login"}`)
+	} else {
+		fmt.Fprint(w, `{"success": false, "message": "Wrong username or password"}`)
+	}
+}
+
+/*func login(w http.ResponseWriter, r *http.Request) {
 	var userbyl Userlogin
 	var userbys Usersign
 	w.Header().Set("Content-Type", "application/json")
 
-	if userbyl.UName != "" && userbyl.Pwd != "" {
-		userlogin = append(userlogin, userbyl)
-		fmt.Fprint(w, "true ", "Succesful login")
-		return
-	} else if userbyl.UName == "" && userbyl.Pwd == "" {
-		fmt.Fprint(w, "false ", "Information cannot be empty")
-		return
-	} else if userbyl.UName != userbys.UName && userbyl.Pwd != userbys.Pwd {
-		fmt.Fprint(w, "false ", "wrong username or password")
+	err := json.NewDecoder(r.Body).Decode(&userbyl)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Fprint(w, userbyl)
-}
+
+	if userbys.UName == userbyl.UName && userbys.Pwd == userbyl.Pwd {
+		fmt.Fprint(w, `{"success": true, "message": "Successful login"}`")
+		fmt.Fprint(w, userbyl, &userbys)
+	} else {
+		fmt.Fprint(w, `{"success": false, "message": "Wrong username or password"})
+		fmt.Fprint(w, userbyl, &userbys)
+	}
+}*/
 
 func listusers(w http.ResponseWriter, r *http.Request) {
 	var list Usersign
