@@ -255,3 +255,24 @@ func main() {
 }
 
 */
+
+//------------------------------
+/*func login(w http.ResponseWriter, r *http.Request) {
+	var userbyl Userlogin
+	var userbys Usersign
+	w.Header().Set("Content-Type", "application/json")
+
+	err := json.NewDecoder(r.Body).Decode(&userbyl)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if userbys.UName == userbyl.UName && userbys.Pwd == userbyl.Pwd {
+		fmt.Fprint(w, `{"success": true, "message": "Successful login"}`")
+		fmt.Fprint(w, userbyl, &userbys)
+	} else {
+		fmt.Fprint(w, `{"success": false, "message": "Wrong username or password"})
+		fmt.Fprint(w, userbyl, &userbys)
+	}
+}*/
