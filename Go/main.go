@@ -13,6 +13,7 @@ var usersign = []Usersign{
 var userlogin = []Userlogin{
 	{UName: "", Pwd: ""},
 }
+var m map[string]Usersign
 
 type Usersign struct {
 	ID    int
@@ -39,6 +40,9 @@ func signup(w http.ResponseWriter, r *http.Request) {
 
 	if userby.UName != "" && userby.Pwd != "" && userby.Name != "" && userby.SName != "" {
 		fmt.Fprint(w, `{"success": "True", "message": "Successful signup"}`, userby.UName, " ", userby.ID)
+		for userby, value := range m {
+			fmt.Println(userby, value)
+		}
 	} else {
 		fmt.Fprint(w, `{"success": "False", "message": " Information cannot be empty"}`)
 		return
@@ -76,7 +80,6 @@ func idd() {
 		ids.ID++
 		return
 	}
-	return
 }
 
 func main() {
