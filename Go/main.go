@@ -13,7 +13,6 @@ var usersign = []Usersign{
 var userlogin = []Userlogin{
 	{UName: "", Pwd: ""},
 }
-var m map[string]Usersign
 
 type Usersign struct {
 	ID    int
@@ -40,17 +39,15 @@ func signup(w http.ResponseWriter, r *http.Request) {
 
 	if userby.UName != "" && userby.Pwd != "" && userby.Name != "" && userby.SName != "" {
 		fmt.Fprint(w, `{"success": "True", "message": "Successful signup"}`, userby.UName, " ", userby.ID)
-		for userby, value := range m {
-			fmt.Println(userby, value)
-		}
 	} else {
-		fmt.Fprint(w, `{"success": "False", "message": " Information cannot be empty"}`)
+		fmt.Fprint(w, "success:", "False", "message:", " Information cannot be empty")
 		return
 	}
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
 	var userbyl Userlogin
+	var userbyr Usersign
 	w.Header().Set("Content-Type", "application/json")
 
 	err := json.NewDecoder(r.Body).Decode(&userbyl)
@@ -68,17 +65,10 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if users {
-		fmt.Fprint(w, `{"success": "True", "message": "Successful login"}`)
+		fmt.Fprint(w, "success:", "True", "\nmessage:", "Successful login")
+		fmt.Fprint(w, userbyr.ID, userbyr.UName, userbyr.Name, userbyr.SName)
 	} else {
-		fmt.Fprint(w, `{"success": "False", "message": "Wrong username or password"}`)
-	}
-}
-func idd() {
-	var ids Usersign
-
-	if ids.ID != -1 {
-		ids.ID++
-		return
+		fmt.Fprint(w, "success:", "False", "message:", "Wrong username or password")
 	}
 }
 
