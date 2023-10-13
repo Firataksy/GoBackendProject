@@ -7,21 +7,22 @@ import (
 )
 
 var usersign = []Usersign{
-	{UName: "", Pwd: "", Name: "", SName: ""},
+	{ID: 1, UName: "", Pwd: "", Name: "", SName: ""},
 }
 
 var userlogin = []Userlogin{
-	{UName: "", Pwd: ""},
+	{ID: 1, UName: "", Pwd: ""},
 }
 
 type Usersign struct {
-	ID    int    `json:"ıd"`
+	ID    int
 	UName string `json:"username"`
 	Pwd   string `json:"password"`
 	Name  string `json:"name"`
 	SName string `json:"sname"`
 }
 type Userlogin struct {
+	ID    int
 	UName string `json:"username"`
 	Pwd   string `json:"password"`
 }
@@ -35,15 +36,20 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	usersign = append(usersign, userby)
-	if userby.UName != "" && userby.Pwd != "" && userby.Name != "" && userby.SName != "" {
+	if userby.UName == userby.UName {
+		fmt.Fprintf(w, `{"message": "Username is used"}`)
+		return
+	}
 
-		fmt.Fprint(w, `{"success": true, "message": "Successful signup"}`, userby.Name)
+	if userby.UName != "" && userby.Pwd != "" && userby.Name != "" && userby.SName != "" {
+		fmt.Fprint(w, `{"success": "true", "message": "Successful signup"}`, userby.UName)
 		return
 	} else {
-		fmt.Fprint(w, `{"success": true, "message": " Information cannot be empty"}`)
+		fmt.Fprint(w, `{"success": "false", "message": " Information cannot be empty"}`)
 		return
 	}
 }
+
 func login(w http.ResponseWriter, r *http.Request) {
 	var userbyl Userlogin
 	w.Header().Set("Content-Type", "application/json")
@@ -63,9 +69,11 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if users {
-		fmt.Fprint(w, `{"success": true, "message": "Successful login"}`)
+		fmt.Fprint(w, `{"success": "true", "message": "Successful login"}`)
+		fmt.Fprint(w, userbyl, "\n", usersign)
 	} else {
-		fmt.Fprint(w, `{"success": false, "message": "Wrong username or password"}`)
+		fmt.Fprint(w, `{"success": "false", "message": "Wrong username or password"}`)
+		fmt.Fprint(w, userbyl, "\n", usersign)
 	}
 }
 
