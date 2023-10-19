@@ -253,6 +253,39 @@ func main() {
 		panic(err)
 	}
 }
+--------------
+func getusers(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Postmandan gelen ID'yi alın
+	id := r.URL.Query().Get("id")
+
+	// ID'yi integer'a dönüştür
+	userID, err := strconv.Atoi(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Kullanıcı ID'si usersid haritasında var mı kontrol edin
+	user, exists := usersid[userID]
+	if !exists {
+		fmt.Fprint(w, "Durum: Başarısız", "\nMesaj: Kullanıcı bulunamadı")
+		return
+	}
+
+	// Kullanıcının bilgilerini usersign'dan alın
+	userInfo := usersign[userID]
+
+	// Kullanıcı bilgilerini JSON formatında döndürün
+	userJSON, err := json.Marshal(userInfo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(userJSON)
+}
 
 */
 
@@ -276,3 +309,198 @@ func main() {
 		fmt.Fprint(w, userbyl, &userbys)
 	}
 }*/
+
+/*
+
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"sync"
+)
+
+type User struct {
+	ID       int    `json:"id"`
+	Username string `json:"username"`
+}
+
+var (
+	users     = make(map[int]User)
+	usersLock sync.Mutex
+	currentID = 1
+)
+
+func main() {
+	http.HandleFunc("/signup", SignupHandler)
+	http.HandleFunc("/users", UsersHandler)
+
+	fmt.Println("Server started on :8080")
+	http.ListenAndServe(":8080", nil)
+}
+
+func SignupHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var user User
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	usersLock.Lock()
+	defer usersLock.Unlock()
+
+	user.ID = currentID
+	currentID++
+	users[user.ID] = user
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"message": "User created successfully",
+		"user":    user,
+	})
+}
+
+func UsersHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	usersLock.Lock()
+	defer usersLock.Unlock()
+
+	userList := make([]User, 0, len(users))
+	for _, user := range users {
+		userList = append(userList, user)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(userList)
+}
+*/
+//-----USER SİGN------
+/*usersign = append(usersign, userby)
+
+if userby.UName != "" && userby.Pwd != "" && userby.Name != "" && userby.SName != "" {
+	fmt.Fprint(w, "success:" ,"True", "message:", "Successful signup", userby.UName, "\n", userby.ID)
+} else {
+	fmt.Fprint(w, "success:", "False", "message:", " Information cannot be empty")
+	return
+}
+-------------
+func login(w http.ResponseWriter, r *http.Request) {
+	var userbyl Userlogin
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewDecoder(r.Body).Decode(&userbyl)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Kullanıcıyı bulmak için username'e göre bir döngü oluştur
+	var foundUser Usersign
+	for _, user := range usersign {
+		if user.UName == userbyl.UName {
+			foundUser = user
+			break
+		}
+	}
+
+	if foundUser.UName == userbyl.UName && foundUser.Pwd == userbyl.Pwd {
+		fmt.Fprint(w, "Status: True\nmessage: Successful login\nUsername: ", foundUser.UName)
+	} else {
+		fmt.Fprint(w, "Status: False\nmessage: Wrong username or password")
+	}
+}
+
+----------------
+func login(w http.ResponseWriter, r *http.Request) {
+	var userbyl Userlogin
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewDecoder(r.Body).Decode(&userbyl)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Kullanıcı adı ve şifre kontrolü
+	for _, user := range usersign {
+		if user.UName == userbyl.UName && user.Pwd == userbyl.Pwd {
+			// Kullanıcı doğrulandı, başarılı giriş yapın
+			var userid Userid
+			fmt.Fprint(w, "Status:", "True", "\nmessage:", "Successful login", "\nUserıd: ", userid.ID, "\nUsername: ", userbyl.UName)
+			return
+		}
+	}
+
+	// Kullanıcı adı veya şifre yanlışsa hata mesajı gönderin
+	fmt.Fprint(w, "Status:", "False", "\nmessage:", "Wrong username or password")
+}
+
+----------------
+
+if userby.UName != "" && userby.Pwd != "" && userby.Name != "" && userby.SName != "" {
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":   "True",
+			"message":  "User created successfully",
+			"userıd":   userby.ID,
+			"username": userby.UName,
+		})
+	} else if userby.UName == "" && userby.Pwd == "" && userby.Name == "" && userby.SName == "" {
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  "False",
+			"message": "Information cannot be empty",
+		})
+		return
+	}
+*/
+
+/*
+package main
+
+import (
+    "fmt"
+    "sync"
+)
+
+// Kullanıcıları tutmak için kullanılan veri yapısı
+type UserRegistry struct {
+    users map[string]bool
+    mu    sync.Mutex
+}
+
+// Yeni bir kullanıcı kaydeder
+func (ur *UserRegistry) Register(username string) error {
+    ur.mu.Lock()
+    defer ur.mu.Unlock()
+
+    if ur.users[username] {
+        return fmt.Errorf("Kullanıcı adı zaten kayıtlı: %s", username)
+    }
+
+    ur.users[username] = true
+    fmt.Printf("Kullanıcı kaydedildi: %s\n", username)
+    return nil
+}
+
+func main() {
+    ur := &UserRegistry{
+        users: make(map[string]bool),
+    }
+
+    usernames := []string{"user1", "user2", "user1", "user3"}
+
+    for _, username := range usernames {
+        if err := ur.Register(username); err != nil {
+            fmt.Println(err)
+        }
+    }
+}
+*/
