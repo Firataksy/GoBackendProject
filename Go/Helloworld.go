@@ -805,5 +805,56 @@ func main() {
 	}
 }
 
+-------------- User datası çekme --------------
+for _, user := range user {
+		fmt.Println(user.UName, " ", userbylogin.UName, " ", userbylogin.Pwd, " ", user.Pwd)
+		if user.UName == userbylogin.UName && user.Pwd == userbylogin.Pwd {
+			fmt.Fprint(w, "Status: True", "\nMessage: Successful login", "\nUserıd: ", user.ID, "\nUsername: ", userbylogin.UName)
+
+		} else {
+			fmt.Fprint(w, "Status: False", "\nMessage: Wrong username or password")
+			return
+		}
+	}
+------------- USER LİSTELEME -----------------
+	func getUserByID(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+
+    // URL'den kullanıcı ID'sini alın
+    userID := r.URL.Query().Get("id")
+
+    // Kullanıcı ID'sini tamsayıya çevirin
+    id, err := strconv.Atoi(userID)
+    if err != nil {
+        http.Error(w, "Invalid ID", http.StatusBadRequest)
+        return
+    }
+
+    // Kullanıcıyı ID'ye göre bulun
+    user, found := userByID(id)
+    if !found {
+        http.Error(w, "User not found", http.StatusNotFound)
+        return
+    }
+
+    // Kullanıcı bilgilerini JSON formatına çevirip yanıt verin
+    userJSON, err := json.Marshal(user)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    w.Write(userJSON)
+}
+
+// Kullanıcıyı ID'ye göre bulan yardımcı bir fonksiyon
+func userByID(id int) (Sign, bool) {
+    for _, u := range usersign {
+        if u.ID == id {
+            return u, true
+        }
+    }
+    return Sign{}, false
+}
 
 */
