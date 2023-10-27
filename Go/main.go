@@ -67,23 +67,27 @@ func signup(w http.ResponseWriter, r *http.Request) {
 
 func login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var userbylogin Login
+	var userlogin Login
 
-	err := json.NewDecoder(r.Body).Decode(&userbylogin)
+	err := json.NewDecoder(r.Body).Decode(&userlogin)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	userl[userbylogin.UName] = userbylogin
-	user, control := user[userbylogin.UName]
+	userl[userlogin.UName] = userlogin
 
-	if control == true && user.Pwd == userbylogin.Pwd {
-		fmt.Println(user.UName, " ", userbylogin.UName, " ", userbylogin.Pwd, " ", user.Pwd)
+	user, control := user[userlogin.UName]
+
+	if control == true && user.Pwd == userlogin.Pwd {
 		fmt.Fprint(w, "Status: True", "\nMessage: Successful login", "\nUserId: ", user.ID, "\nUsername: ", user.UName)
 	} else {
 		fmt.Fprint(w, "Status: False", "\nMessage: Wrong username or password")
 	}
+}
+
+func pwdhash() {
+
 }
 
 func getusers(w http.ResponseWriter, r *http.Request) {
@@ -99,7 +103,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/signup", signup)
 	mux.HandleFunc("/login", login)
-	mux.HandleFunc("/list/user?id=", getusers)
+	mux.HandleFunc("/list", getusers)
 	err := http.ListenAndServe(":9000", mux)
 	if err != nil {
 		panic(err)
