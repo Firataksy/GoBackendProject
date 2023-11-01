@@ -14,10 +14,14 @@ var userlogin = []Login{
 	{UName: "", Pwd: ""},
 }
 
+var getid = []Getid{
+	{ID: 0},
+}
+
 var (
 	user      = make(map[string]Sign)
 	userl     = make(map[string]Login)
-	currentID = 1
+	currentID = 0
 )
 
 type Sign struct {
@@ -32,13 +36,14 @@ type Login struct {
 	ID    int    `json:"id"`
 	UName string `json:"username"`
 	Pwd   string `json:"password"`
-	Name  string `json:"name"`
-	SName string `json:"sname"`
+}
+
+type Getid struct {
+	ID int `json:"id"`
 }
 
 func signup(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-
 	var usersignup Sign
 
 	err := json.NewDecoder(r.Body).Decode(&usersignup)
@@ -54,10 +59,16 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "Username is used")
 		return
 	} else if control != true && usersignup.UName != "" && usersignup.Pwd != "" && usersignup.Name != "" && usersignup.SName != "" {
-		usersignup.ID = currentID
 		currentID++
+		usersignup.ID = currentID
 		user[usersignup.UName] = usersignup
-		fmt.Fprint(w, "Status: True", "\nMessage: Successful signup", "\nUserıd: ", usersignup.ID, "\nUsername: ", usersignup.UName, "\n")
+		usersJSON, err := json.Marshal(usersignup)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		fmt.Fprint(w, "Status: True", "\nMessage: Successful signup\n")
+		w.Write(usersJSON)
 		return
 	} else if usersignup.UName == "" && usersignup.Pwd == "" && usersignup.Name == "" && usersignup.SName == "" {
 		fmt.Fprint(w, "Status: False", "\nMessage: Information cannot be empty")
@@ -75,27 +86,50 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userl[userlogin.UName] = userlogin
+	userlogin.ID = currentID
+	if userlogin.UName != "" && userlogin.Pwd != "" {
+		userl[userlogin.UName] = userlogin
+	}
+
+	userJSON, err := json.Marshal(userlogin)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	user, control := user[userlogin.UName]
 
 	if control == true && user.Pwd == userlogin.Pwd {
-		fmt.Fprint(w, "Status: True", "\nMessage: Successful login", "\nUserId: ", user.ID, "\nUsername: ", user.UName)
+		fmt.Fprint(w, "Status: True", "\nMessage: Successful login\n")
+		w.Write(userJSON)
+		return
 	} else {
 		fmt.Fprint(w, "Status: False", "\nMessage: Wrong username or password")
+		return
 	}
-}
-
-func pwdhash() {
-
 }
 
 func getusers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-
+	var id Getid
+	var user Login
 	fmt.Fprint(w, "----Informations----\n")
-	for _, user := range user {
-		fmt.Fprint(w, "Status: True", "\nUserId: ", user.ID, "\nUsername: ", user.UName, "\nUserFirstName: ", user.Name, "\nUserLastName: ", user.SName, "\n----------------------", "\n")
+
+	err := json.NewDecoder(r.Body).Decode(&getid)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	userJSON, err := json.Marshal(userl)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if user.ID == id.ID {
+		w.Write(userJSON)
+		return
 	}
 }
 
