@@ -14,8 +14,7 @@ func getusers(w http.ResponseWriter, r *http.Request) {
 	idurl := r.URL.Query().Get("id")
 
 	idInt, _ := strconv.Atoi(idurl)
-
-	for _, user := range user {
+	for _, user := range usersign {
 		if user.ID == idInt {
 			message.Status = true
 			message.Message = "Successfully listed"
@@ -26,11 +25,9 @@ func getusers(w http.ResponseWriter, r *http.Request) {
 			w.Write(userlist)
 			return
 		}
-		fmt.Print(user.ID)
 	}
-
 	message.Status = false
-	message.Message = "Wrong id try again"
+	message.Message = "Wrong id try again "
 	mes, _ := json.Marshal(message)
 	w.Write(mes)
 }

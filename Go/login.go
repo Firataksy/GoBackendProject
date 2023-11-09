@@ -23,7 +23,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	if control == true && user.Pwd == userlogin.Pwd {
 		message.Status = true
 		message.Message = "Succesful login"
-
+		userlogin.Pwd = ""
 		usersJSON, err := json.Marshal(userlogin)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

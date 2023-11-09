@@ -17,7 +17,6 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usersign = append(usersign, usersignup)
 	_, control := user[usersignup.UName]
 
 	if control != false {
@@ -33,12 +32,10 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		usersignup.ID = currentID
 		usersignup.Pwd = md5Encode(usersignup.Pwd)
 		user[usersignup.UName] = usersignup
+		usersignup.Pwd = ""
+		usersign = append(usersign, usersignup)
 		userJSON, _ := json.Marshal(usersignup)
 		messageJSON, _ := json.Marshal(message)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
 		w.Write(messageJSON)
 		w.Write(userJSON)
 		return
