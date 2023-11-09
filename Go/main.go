@@ -68,7 +68,7 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		currentID++
 		usersignup.ID = currentID
 		user[usersignup.UName] = usersignup
-		GetMD5()
+		usersignup.Pwd = md5Encode(usersignup.Pwd)
 		messageJSON, _ := json.Marshal(message)
 		usersJSON, err := json.Marshal(usersignup)
 		if err != nil {
@@ -76,6 +76,7 @@ func signup(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		w.Write(messageJSON)
+		fmt.Fprint(w, usersignup.ID, usersignup.UName, usersignup.Name, usersignup.SName)
 		w.Write(usersJSON)
 		return
 	} else {
@@ -87,13 +88,11 @@ func signup(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetMD5() {
-	var sign Sign
-	user := sign
-	fmt.Println(user.Pwd, "a")
-	hash := []byte(user.Pwd)
-	user[sign.Pwd] = md5.Sum(hash)
-	return
+func md5Encode(input string) string {
+	hash := md5.New()
+	_, _ = hash.Write([]byte(input))
+	md5 := hash.Sum(nil)
+	return fmt.Sprintf("%x", md5)
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -110,6 +109,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	userl[userlogin.UName] = userlogin
 	user, control := user[userlogin.UName]
 	userlogin.ID = user.ID
+	userlogin.Pwd = md5Encode(userlogin.Pwd)
 	if control == true && user.Pwd == userlogin.Pwd {
 		message.Status = true
 		message.Message = "Succesful login"
