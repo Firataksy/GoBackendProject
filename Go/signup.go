@@ -40,6 +40,7 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		w.Write(userJSON)
 		return
 	} else {
+
 		message.Status = false
 		message.Message = "Information cannot be empty"
 		messageJSON, _ := json.Marshal(message)
