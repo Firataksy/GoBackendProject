@@ -10,7 +10,6 @@ func getusers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var message Message
 	var list Listw
-
 	idurl := r.URL.Query().Get("id")
 
 	idInt, _ := strconv.Atoi(idurl)
