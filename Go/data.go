@@ -23,7 +23,6 @@ type Sign struct {
 }
 
 type Login struct {
-<<<<<<< HEAD
 	Status bool   `json:"status"`
 	ID     int    `json:"id"`
 	UName  string `json:"username"`
@@ -54,11 +53,6 @@ type Listw struct {
 		Name  string `json:"name"`
 		SName string `json:"sname"`
 	}
-=======
-	ID    int    `json:"id"`
-	UName string `json:"username"`
-	Pwd   string `json:"password"`
->>>>>>> c7acc5e1344126a1e92b5362a7a2c9a0dfc2a104
 }
 
 type Message struct {
