@@ -6,6 +6,7 @@ import (
 
 func main() {
 	mux := http.NewServeMux()
+
 	mux.HandleFunc("/signup", signup)
 	mux.HandleFunc("/login", login)
 	mux.HandleFunc("/list", getusers)
