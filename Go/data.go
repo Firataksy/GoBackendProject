@@ -9,8 +9,9 @@ var userlogin = []Login{
 }
 
 var (
-	user      = make(map[string]Sign)
-	userl     = make(map[string]Login)
+	user  = make(map[string]Sign)
+	userl = make(map[string]Login)
+
 	currentID = 0
 )
 
