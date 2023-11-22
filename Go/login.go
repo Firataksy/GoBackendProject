@@ -7,7 +7,6 @@ import (
 )
 
 func login(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("Content-Type", "application/json")
 	var userlogin Login
 	var loginw Loginw
@@ -18,6 +17,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
 	userlogin.Pwd = md5Encode(userlogin.Pwd)
 	userlogin.ID = currentID
 	userl[userlogin.UName] = userlogin
@@ -25,7 +25,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	userlogin.ID = user.ID
 
 	if control == true && user.Pwd == userlogin.Pwd {
-		loginw.Status, loginw.Information.ID, loginw.Information.Uname = true, userlogin.ID, userlogin.UName
+		loginw.Status, loginw.Informations.ID, loginw.Informations.Uname = true, userlogin.ID, userlogin.UName
 		userlogin.Pwd = ""
 		usersJSON, err := json.Marshal(loginw)
 		if err != nil {

@@ -32,7 +32,7 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		user[usersignup.UName] = usersignup
 		usersignup.Pwd = ""
 		usersign = append(usersign, usersignup)
-		sign.Status, sign.Information.ID, sign.Information.Uname = true, usersignup.ID, usersignup.UName
+		sign.Status, sign.Informations.ID, sign.Informations.Uname = true, usersignup.ID, usersignup.UName
 		userJSON, _ := json.Marshal(sign)
 		w.Write(userJSON)
 		return

@@ -3,15 +3,13 @@ package main
 var usersign = []Sign{
 	{UName: "", Pwd: "", Name: "", SName: ""},
 }
-
 var userlogin = []Login{
 	{UName: "", Pwd: ""},
 }
 
 var (
-	user  = make(map[string]Sign)
-	userl = make(map[string]Login)
-
+	user      = make(map[string]Sign)
+	userl     = make(map[string]Login)
 	currentID = 0
 )
 
@@ -31,24 +29,24 @@ type Login struct {
 }
 
 type Signw struct {
-	Status      bool `json:"status"`
-	Information struct {
+	Status       bool `json:"status"`
+	Informations struct {
 		ID    int    `json:"id"`
 		Uname string `json:"uname"`
 	}
 }
 
 type Loginw struct {
-	Status      bool `json:"status"`
-	Information struct {
+	Status       bool `json:"status"`
+	Informations struct {
 		ID    int    `json:"id"`
 		Uname string `json:"uname"`
 	}
 }
 
 type Listw struct {
-	Status      bool `json:"status"`
-	Information struct {
+	Status       bool `json:"status"`
+	Informations struct {
 		ID    int    `json:"id"`
 		Uname string `json:"uname"`
 		Name  string `json:"name"`

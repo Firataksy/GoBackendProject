@@ -11,12 +11,11 @@ func getusers(w http.ResponseWriter, r *http.Request) {
 	var message Message
 	var list Listw
 	idurl := r.URL.Query().Get("id")
-
 	idInt, _ := strconv.Atoi(idurl)
 	for _, user := range usersign {
 		if idInt != 0 {
 			if user.ID == idInt {
-				list.Status, list.Information.ID, list.Information.Uname, list.Information.Name, list.Information.SName = true, user.ID, user.UName, user.Name, user.SName
+				list.Status, list.Informations.ID, list.Informations.Uname, list.Informations.Name, list.Informations.SName = true, user.ID, user.UName, user.Name, user.SName
 				message.Message = "Successfully listed"
 				userlist, _ := json.Marshal(list)
 				w.Write(userlist)

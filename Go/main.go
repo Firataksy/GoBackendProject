@@ -1,12 +1,9 @@
 package main
 
-import (
-	"net/http"
-)
+import "net/http"
 
 func main() {
 	mux := http.NewServeMux()
-
 	mux.HandleFunc("/signup", signup)
 	mux.HandleFunc("/login", login)
 	mux.HandleFunc("/list", getusers)
