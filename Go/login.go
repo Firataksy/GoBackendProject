@@ -24,7 +24,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	user, control := user[userlogin.UName]
 	userlogin.ID = user.ID
 
-	if control == true && user.Pwd == userlogin.Pwd {
+	if control != false && user.Pwd == userlogin.Pwd {
 		loginw.Status, loginw.Informations.ID, loginw.Informations.Uname = true, userlogin.ID, userlogin.UName
 		userlogin.Pwd = ""
 		usersJSON, err := json.Marshal(loginw)

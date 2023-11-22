@@ -3,9 +3,6 @@ package main
 var usersign = []Sign{
 	{UName: "", Pwd: "", Name: "", SName: ""},
 }
-var userlogin = []Login{
-	{UName: "", Pwd: ""},
-}
 
 var (
 	user      = make(map[string]Sign)

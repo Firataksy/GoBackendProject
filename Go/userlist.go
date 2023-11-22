@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func getusers(w http.ResponseWriter, r *http.Request) {
+func userlist(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var message Message
 	var list Listw
