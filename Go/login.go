@@ -36,8 +36,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(user)
 		return
 	} else {
-		message.Status = false
-		message.Message = "Wrong username or password"
+		message.Status, message.Message = false, "Wrong username or password"
 		messageJSON, _ := json.Marshal(message)
 		w.Write(messageJSON)
 		return

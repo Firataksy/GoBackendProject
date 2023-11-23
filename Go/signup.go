@@ -20,8 +20,7 @@ func signup(w http.ResponseWriter, r *http.Request) {
 	_, control := user[usersignup.UName]
 
 	if control != false {
-		message.Status = false
-		message.Message = "Username is used"
+		message.Status, message.Message = false, "Username is used"
 		messageJSON, _ := json.Marshal(message)
 		w.Write(messageJSON)
 		return
@@ -37,8 +36,7 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		w.Write(userJSON)
 		return
 	} else {
-		message.Status = false
-		message.Message = "Information cannot be empty"
+		message.Status, message.Message = false, "Information cannot be empty"
 		messageJSON, _ := json.Marshal(message)
 		w.Write(messageJSON)
 		return
