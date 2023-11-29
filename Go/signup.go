@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -9,7 +10,6 @@ func signup(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var usersignup Sign
 	var message Message
-	var sign Signw
 
 	err := json.NewDecoder(r.Body).Decode(&usersignup)
 	if err != nil {
@@ -17,26 +17,25 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, control := user[usersignup.UName]
+	_, control := user[usersignup.UserName]
 
 	if control != false {
-		message.Status, message.Message = false, "Username is used"
+		message := Statusfalse()
 		messageJSON, _ := json.Marshal(message)
 		w.Write(messageJSON)
 		return
-	} else if control != true && usersignup.UName != "" && usersignup.Pwd != "" && usersignup.Name != "" && usersignup.SName != "" {
+	} else if control != true && usersignup.UserName != "" && usersignup.Pwd != "" && usersignup.Name != "" && usersignup.SurName != "" {
 		currentID++
 		usersignup.ID = currentID
 		usersignup.Pwd = md5Encode(usersignup.Pwd)
-		user[usersignup.UName] = usersignup
-		usersignup.Pwd = ""
-		usersign = append(usersign, usersignup)
-		sign.Status, sign.Informations.ID, sign.Informations.Uname = true, usersignup.ID, usersignup.UName
-		userJSON, _ := json.Marshal(sign)
+		message = Statustrue()
+		user[usersignup.UserName] = usersignup
+		userJSON, _ := json.Marshal(Signr(message.Status, usersignup.ID, usersignup.UserName))
 		w.Write(userJSON)
+		fmt.Println(user)
 		return
 	} else {
-		message.Status, message.Message = false, "Information cannot be empty"
+		message = Statusfalse()
 		messageJSON, _ := json.Marshal(message)
 		w.Write(messageJSON)
 		return

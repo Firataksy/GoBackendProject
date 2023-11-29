@@ -9,8 +9,6 @@ import (
 func login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var userlogin Login
-	var loginw Loginw
-	var message Message
 
 	err := json.NewDecoder(r.Body).Decode(&userlogin)
 	if err != nil {
@@ -18,16 +16,13 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userlogin.Pwd = md5Encode(userlogin.Pwd)
-	userlogin.ID = currentID
-	userl[userlogin.UName] = userlogin
-	user, control := user[userlogin.UName]
-	userlogin.ID = user.ID
+	userlogin.Password = md5Encode(userlogin.Password)
+	userl[userlogin.UserName] = userlogin
+	user := user[userlogin.UserName]
 
-	if control != false && user.Pwd == userlogin.Pwd {
-		loginw.Status, loginw.Informations.ID, loginw.Informations.Uname = true, userlogin.ID, userlogin.UName
-		userlogin.Pwd = ""
-		usersJSON, err := json.Marshal(loginw)
+	if user.Pwd == userlogin.Password && user.UserName == userlogin.UserName {
+		message := Statustrue()
+		usersJSON, err := json.Marshal(Loginr(message.Status, user.ID, userlogin.UserName))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -36,7 +31,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(user)
 		return
 	} else {
-		message.Status, message.Message = false, "Wrong username or password"
+		message := Statusfalse()
 		messageJSON, _ := json.Marshal(message)
 		w.Write(messageJSON)
 		return
