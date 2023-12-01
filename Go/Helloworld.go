@@ -1133,5 +1133,46 @@ func signup(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+-------------ESKİ USERDATA -------------
+
+/*w.Header().Set("Content-Type", "application/json")
+	var message Message
+	idurl := r.URL.Query().Get("id")
+
+	idInt, _ := strconv.Atoi(idurl)
+
+	for _, user := range user {
+		if user.ID == idInt {
+			message.Status = true
+			message.Message = "Successfully listed"
+			mes, _ := json.Marshal(message)
+			userlist, _ := json.Marshal(user)
+			w.Write(mes)
+			fmt.Fprint(w, "\n")
+			w.Write(userlist)
+			return
+		}
+
+	}
+
+	message = Statusfalse()
+	mes, _ := json.Marshal(message)
+	w.Write(mes)
+	/*if Data != idurl {
+		message := Statusfalse()
+		messageJSON, _ := json.Marshal(message)
+		w.Write(messageJSON)
+		return
+	} else if userdata == idurl {
+		userJSON, err := json.Marshal(user)
+		if err != nil {
+			http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
+			return
+		}
+		message := Statustrue()
+
+		w.Write(userJSON)
+	}
+
 
 */

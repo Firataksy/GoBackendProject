@@ -2,13 +2,14 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
 func login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var userlogin Login
+	var signlogin Signlogin
+	var error Error
 
 	err := json.NewDecoder(r.Body).Decode(&userlogin)
 	if err != nil {
@@ -21,19 +22,20 @@ func login(w http.ResponseWriter, r *http.Request) {
 	user := user[userlogin.UserName]
 
 	if user.Pwd == userlogin.Password && user.UserName == userlogin.UserName {
-		message := Statustrue()
-		usersJSON, err := json.Marshal(Loginr(message.Status, user.ID, userlogin.UserName))
+		message := Status.StatTrue(Stat{})
+		signlogin.Status, signlogin.Data.ID, signlogin.Data.UserName = message, user.ID, userlogin.UserName
+		usersJSON, err := json.Marshal(signlogin)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.Write(usersJSON)
-		fmt.Println(user)
 		return
 	} else {
-		message := Statusfalse()
-		messageJSON, _ := json.Marshal(message)
-		w.Write(messageJSON)
+		stat := Status.StatFalse(Stat{})
+		error.Status, error.Message = stat, "Wrong Username or Password"
+		errorJSON, _ := json.Marshal(error)
+		w.Write(errorJSON)
 		return
 	}
 }

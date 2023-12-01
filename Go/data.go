@@ -15,11 +15,6 @@ type Sign struct {
 	SurName  string `json:"surname"`
 }
 
-type Signw struct {
-	Status bool `json:"status"`
-	Data   Sign
-}
-
 type Login struct {
 	Status   bool   `json:"status"`
 	ID       int    `json:"id"`
@@ -27,7 +22,7 @@ type Login struct {
 	Password string `json:"password"`
 }
 
-type Listw struct {
+type MainData struct {
 	Status bool `json:"status"`
 	Data   struct {
 		ID       int    `json:"id"`
@@ -37,36 +32,31 @@ type Listw struct {
 	}
 }
 
-func Signr(status bool, ID int, UserName string) Sign {
-	return Sign{
-		Status:   status,
-		ID:       ID,
-		UserName: UserName,
+type Signlogin struct {
+	Status bool `json:"status"`
+	Data   struct {
+		ID       int    `json:"id"`
+		UserName string `json:"username"`
 	}
 }
 
-func Loginr(status bool, ID int, UserName string) Login {
-	return Login{
-		Status:   status,
-		ID:       ID,
-		UserName: UserName,
-	}
-}
-
-func Statustrue() Message {
-	var mes Message
-	mes.Status = true
-	return mes
-}
-
-func Statusfalse() Message {
-	var mes Message
-	mes.Status = false
-	mes.Message = "Error, try again"
-	return mes
-}
-
-type Message struct {
+type Error struct {
 	Status  bool   `json:"status"`
 	Message string `json:"message"`
+}
+
+type Status interface {
+	StatTrue() bool
+	StatFalse() bool
+}
+
+func (Stat) StatTrue() bool {
+	return true
+}
+
+func (Stat) StatFalse() bool {
+	return false
+}
+
+type Stat struct {
 }

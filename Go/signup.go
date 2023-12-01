@@ -2,14 +2,14 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
 func signup(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var usersignup Sign
-	var message Message
+	var signlogin Signlogin
+	var error Error
 
 	err := json.NewDecoder(r.Body).Decode(&usersignup)
 	if err != nil {
@@ -20,24 +20,30 @@ func signup(w http.ResponseWriter, r *http.Request) {
 	_, control := user[usersignup.UserName]
 
 	if control != false {
-		message := Statusfalse()
-		messageJSON, _ := json.Marshal(message)
-		w.Write(messageJSON)
+		stat := Status.StatFalse(Stat{})
+		error.Status, error.Message = stat, "Username is Used"
+		errorJSON, _ := json.Marshal(error)
+		w.Write(errorJSON)
 		return
 	} else if control != true && usersignup.UserName != "" && usersignup.Pwd != "" && usersignup.Name != "" && usersignup.SurName != "" {
+
 		currentID++
 		usersignup.ID = currentID
 		usersignup.Pwd = md5Encode(usersignup.Pwd)
-		message = Statustrue()
+		message := Status.StatTrue(Stat{})
 		user[usersignup.UserName] = usersignup
-		userJSON, _ := json.Marshal(Signr(message.Status, usersignup.ID, usersignup.UserName))
+
+		signlogin.Status, signlogin.Data.ID, signlogin.Data.UserName = message, usersignup.ID, usersignup.UserName
+
+		userJSON, _ := json.Marshal(signlogin)
 		w.Write(userJSON)
-		fmt.Println(user)
+
 		return
 	} else {
-		message = Statusfalse()
-		messageJSON, _ := json.Marshal(message)
-		w.Write(messageJSON)
+		stat := Status.StatFalse(Stat{})
+		error.Status, error.Message = stat, "Information Cannot be Empty"
+		errorJSON, _ := json.Marshal(error)
+		w.Write(errorJSON)
 		return
 	}
 }
