@@ -22,28 +22,22 @@ func signup(w http.ResponseWriter, r *http.Request) {
 	if control != false {
 		stat := Status.StatFalse(Stat{})
 		error.Status, error.Message = stat, "Username is Used"
-		errorJSON, _ := json.Marshal(error)
-		w.Write(errorJSON)
+		Jsonwrite(w, error)
 		return
 	} else if control != true && usersignup.UserName != "" && usersignup.Pwd != "" && usersignup.Name != "" && usersignup.SurName != "" {
-
 		currentID++
 		usersignup.ID = currentID
 		usersignup.Pwd = md5Encode(usersignup.Pwd)
-		message := Status.StatTrue(Stat{})
 		user[usersignup.UserName] = usersignup
-
+		user[usersignup.ID] = usersignup
+		message := Status.StatTrue(Stat{})
 		signlogin.Status, signlogin.Data.ID, signlogin.Data.UserName = message, usersignup.ID, usersignup.UserName
-
-		userJSON, _ := json.Marshal(signlogin)
-		w.Write(userJSON)
-
+		Jsonwrite(w, signlogin)
 		return
 	} else {
 		stat := Status.StatFalse(Stat{})
 		error.Status, error.Message = stat, "Information Cannot be Empty"
-		errorJSON, _ := json.Marshal(error)
-		w.Write(errorJSON)
+		Jsonwrite(w, error)
 		return
 	}
 }

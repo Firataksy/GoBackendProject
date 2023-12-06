@@ -18,24 +18,17 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userlogin.Password = md5Encode(userlogin.Password)
-	userl[userlogin.UserName] = userlogin
 	user := user[userlogin.UserName]
 
 	if user.Pwd == userlogin.Password && user.UserName == userlogin.UserName {
 		message := Status.StatTrue(Stat{})
 		signlogin.Status, signlogin.Data.ID, signlogin.Data.UserName = message, user.ID, userlogin.UserName
-		usersJSON, err := json.Marshal(signlogin)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Write(usersJSON)
+		Jsonwrite(w, signlogin)
 		return
 	} else {
 		stat := Status.StatFalse(Stat{})
 		error.Status, error.Message = stat, "Wrong Username or Password"
-		errorJSON, _ := json.Marshal(error)
-		w.Write(errorJSON)
+		Jsonwrite(w, error)
 		return
 	}
 }
