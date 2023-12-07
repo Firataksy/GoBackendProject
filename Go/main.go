@@ -8,7 +8,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/signup", signup)
 	mux.HandleFunc("/login", login)
-	mux.HandleFunc("/data", userdata)
+	mux.HandleFunc("/data", getUserData)
 	err := http.ListenAndServe(":9000", mux)
 	if err != nil {
 		panic(err)
