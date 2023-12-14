@@ -18,7 +18,6 @@ func signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	check, _ := rc.Get(context.Background(), "checkusername:"+usersignup.UserName).Result()
-
 	if check == usersignup.UserName && usersignup.UserName != "" {
 		responseError(w, "Username is used")
 		return
@@ -28,7 +27,7 @@ func signup(w http.ResponseWriter, r *http.Request) {
 
 		usersignup.Pwd = md5Encode(usersignup.Pwd)
 
-		userid, _ := rc.Incr(context.Background(), "ID").Result()
+		userid, _ := rc.Incr(context.Background(), "usersignupid").Result()
 		usersignup.ID = int(userid)
 
 		sm := SuccessMessage{
@@ -37,9 +36,9 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		}
 
 		response := jsonConvert(w, usersignup)
-		ıd := strconv.Itoa(int(userid))
+		id := strconv.Itoa(int(userid))
 
-		_, err := rc.Set(context.Background(), "userinfo:"+ıd, response, 0).Result()
+		_, err := rc.Set(context.Background(), "userinfo:"+id, response, 0).Result()
 		if err != nil {
 			fmt.Println("Redis set user info error:", err)
 			return
@@ -51,8 +50,6 @@ func signup(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		data[usersignup.UserName] = usersignup
-		dataint[usersignup.ID] = usersignup
 		responseSuccess(w, sm)
 		return
 	}
