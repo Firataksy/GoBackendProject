@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
 	"net/http"
+
+	"github.com/redis/go-redis/v9"
 )
 
 func main() {
@@ -15,36 +18,19 @@ func main() {
 	}
 }
 
-/*func rediset() {
+var rc *redis.Client
 
+func redisConnect() *redis.Client {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
 		DB:       0,
 	})
-
-	jsonData, err := json.Marshal(usersign)
-	if err != nil {
-		fmt.Println("JSON error:", err)
-		return
-	}
-
-	rediskey := "userdata"
-	err = client.Set(rediskey, jsonData, 0).Err()
-	if err != nil {
-		fmt.Println("Redis error:", err)
-		return
-	}
-	fmt.Println("Map successful registered redis")
-
-	exists, err := client.Exists(rediskey).Result()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if exists == 1 {
-		getValue, _ := client.Get(rediskey).Result()
-		fmt.Println(getValue)
-	}
+	return client
 }
-*/
+
+func init() {
+
+	rc = redisConnect()
+	rc.FlushAll(context.Background())
+}

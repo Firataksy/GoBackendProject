@@ -18,9 +18,15 @@ func login(w http.ResponseWriter, r *http.Request) {
 	user := data[userLogin.UserName]
 
 	if user.Pwd == userLogin.Password && user.UserName == userLogin.UserName {
-		responseSuccess(w, user.ID, user.UserName)
+
+		sm := SuccessMessage{
+			ID:       user.ID,
+			UserName: userLogin.UserName,
+		}
+
+		responseSuccess(w, sm)
 		return
 	}
 
-	responseError(w, "loginerror")
+	responseError(w, "Wrong username or password")
 }

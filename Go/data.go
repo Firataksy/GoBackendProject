@@ -6,9 +6,8 @@ import (
 )
 
 var (
-	data      = make(map[string]Sign)
-	dataint   = make(map[int]Sign)
-	currentID = 0
+	data    = make(map[string]Sign)
+	dataint = make(map[int]Sign)
 )
 
 type Sign struct {
@@ -20,28 +19,21 @@ type Sign struct {
 }
 
 type Login struct {
-	Status   bool   `json:"status"`
 	ID       int    `json:"id"`
 	UserName string `json:"username"`
 	Password string `json:"password"`
 }
 
-type userData struct {
-	Status bool `json:"status"`
-	Data   struct {
-		ID       int    `json:"id"`
-		UserName string `json:"username"`
-		Name     string `json:"name"`
-		SurName  string `json:"surname"`
-	}
+type SuccessData struct {
+	ID       int    `json:"id"`
+	UserName string `json:"username"`
+	Name     string `json:"name"`
+	SurName  string `json:"surname"`
 }
 
 type SuccessMessage struct {
-	Status bool `json:"status"`
-	Data   struct {
-		ID       int    `json:"id"`
-		UserName string `json:"username"`
-	}
+	ID       int    `json:"id"`
+	UserName string `json:"username"`
 }
 
 type FailMessage struct {
@@ -49,50 +41,45 @@ type FailMessage struct {
 	Message string `json:"message"`
 }
 
-func jsonWrite(w http.ResponseWriter, input interface{}) {
-	w.Header().Set("Content-Type", "application/json")
+type Response struct {
+	Status bool `json:"status"`
+	Data   interface{}
+}
+
+func jsonConvert(w http.ResponseWriter, input interface{}) []byte {
 	Json, err := json.Marshal(input)
 	if err != nil {
 		http.Error(w, "Json Error", http.StatusInternalServerError)
-		return
+		return nil
 	}
-	w.Write(Json)
+	return Json
 }
 
-func responseSuccess(w http.ResponseWriter, id int, username string) {
-	w.Header().Set("Content-Type", "application/json")
+func jsonWrite(w http.ResponseWriter, input []byte) {
 
-	sm := &SuccessMessage{
+	w.Write(input)
+}
+
+func responseSuccess(w http.ResponseWriter, input interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	rp := Response{
 		Status: true,
-		Data: struct {
-			ID       int    `json:"id"`
-			UserName string `json:"username"`
-		}{
-			ID:       id,
-			UserName: username},
+		Data:   input,
 	}
 
-	w.WriteHeader(http.StatusOK)
-	jsonWrite(w, sm)
+	response := jsonConvert(w, rp)
+	jsonWrite(w, response)
 }
 
 func responseError(w http.ResponseWriter, input string) {
-	var Message FailMessage
-
-	Message.Status = false
-
-	if input == "usernameerror" {
-		Message.Message = "Username is used"
-
-	} else if input == "signerror" {
-		Message.Message = "Information cannot be empty"
-
-	} else if input == "loginerror" {
-		Message.Message = "Wrong username or password"
-
-	} else if input == "dataerror" {
-		Message.Message = "User not found"
-
+	w.Header().Set("Content-Type", "application/json")
+	ms := &FailMessage{
+		Status:  false,
+		Message: input,
 	}
-	jsonWrite(w, Message)
+
+	response := jsonConvert(w, ms)
+	jsonWrite(w, response)
 }

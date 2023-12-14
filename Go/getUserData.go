@@ -8,13 +8,25 @@ import (
 func getUserData(w http.ResponseWriter, r *http.Request) {
 
 	idurl := r.URL.Query().Get("id")
-	idInt, _ := strconv.Atoi(idurl)
+	idInt, err := strconv.Atoi(idurl)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	user, _ := dataint[idInt]
 
 	if user.ID == idInt && idInt != 0 {
-		responseSuccess(w, user.ID, user.UserName)
+
+		sd := SuccessData{
+			ID:       user.ID,
+			UserName: user.UserName,
+			Name:     user.Name,
+			SurName:  user.SurName,
+		}
+
+		responseSuccess(w, sd)
 		return
 	}
-	responseError(w, "dataerror")
-
+	responseError(w, "User not found")
 }
