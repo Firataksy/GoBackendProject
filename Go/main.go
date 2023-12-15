@@ -46,7 +46,6 @@ func jsonConvert(w http.ResponseWriter, input interface{}) []byte {
 }
 
 func jsonWrite(w http.ResponseWriter, input []byte) {
-
 	w.Write(input)
 }
 

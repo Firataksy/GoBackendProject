@@ -1,10 +1,5 @@
 package main
 
-var (
-	data    = make(map[string]Sign)
-	dataint = make(map[int]Sign)
-)
-
 type Sign struct {
 	ID       int    `json:"id"`
 	UserName string `json:"username"`
@@ -39,4 +34,16 @@ type FailMessage struct {
 type Response struct {
 	Status bool `json:"status"`
 	Data   interface{}
+}
+
+type User struct {
+	ID       int    `json:"id"`
+	UserName string `json:"username"`
+	Pwd      string `json:"password"`
+	Name     string `json:"name"`
+	SurName  string `json:"surname"`
+}
+
+type UserId struct {
+	ID string `json:"id"`
 }

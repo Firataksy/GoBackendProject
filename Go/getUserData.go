@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"net/http"
 	"strconv"
 )
 
 func getUserData(w http.ResponseWriter, r *http.Request) {
+	var user Sign
 
 	idurl := r.URL.Query().Get("id")
 	idInt, err := strconv.Atoi(idurl)
@@ -14,7 +17,9 @@ func getUserData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, _ := dataint[idInt]
+	val, _ := rc.Get(context.Background(), "user:"+idurl).Result()
+
+	json.Unmarshal([]byte(val), &user)
 
 	if user.ID == idInt && idInt != 0 {
 

@@ -1,23 +1,28 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 func login(w http.ResponseWriter, r *http.Request) {
-	var userLogin Login
+	var userLogin Sign
+	var user User
 
-	err := json.NewDecoder(r.Body).Decode(&userLogin)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	er := json.NewDecoder(r.Body).Decode(&userLogin)
+	if er != nil {
+		http.Error(w, er.Error(), http.StatusBadRequest)
 		return
 	}
+	id := strconv.Itoa(userLogin.ID)
+	val, _ := rc.Get(context.Background(), "user:"+id).Result()
 
-	userLogin.Password = md5Encode(userLogin.Password)
-	user := data[userLogin.UserName]
+	json.Unmarshal([]byte(val), &user)
+	userLogin.Pwd = md5Encode(userLogin.Pwd)
 
-	if user.Pwd == userLogin.Password && user.UserName == userLogin.UserName {
+	if user.Pwd == userLogin.Pwd && user.UserName == userLogin.UserName {
 
 		sm := SuccessMessage{
 			ID:       user.ID,
