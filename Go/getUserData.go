@@ -8,7 +8,7 @@ import (
 )
 
 func getUserData(w http.ResponseWriter, r *http.Request) {
-	var user Sign
+	var user User
 
 	idurl := r.URL.Query().Get("id")
 	idInt, err := strconv.Atoi(idurl)

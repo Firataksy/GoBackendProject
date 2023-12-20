@@ -11,15 +11,17 @@ import (
 func signup(w http.ResponseWriter, r *http.Request) {
 	var usersignup Sign
 	var user User
-	var id UserId
+
 	err := json.NewDecoder(r.Body).Decode(&usersignup)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	check, _ := rc.Get(context.Background(), "user:"+id.ID).Result()
-	fmt.Println(id.ID)
+	checkusername, _ := rc.Get(context.Background(), "user:"+usersignup.UserName).Result()
+
+	check, _ := rc.Get(context.Background(), "user:"+checkusername).Result()
+
 	json.Unmarshal([]byte(check), &user)
 
 	if user.UserName == usersignup.UserName {
@@ -31,21 +33,28 @@ func signup(w http.ResponseWriter, r *http.Request) {
 
 		usersignup.Pwd = md5Encode(usersignup.Pwd)
 
-		userıncrid, _ := rc.Incr(context.Background(), "userIncrId").Result()
-		usersignup.ID = int(userıncrid)
+		userIncrID, _ := rc.Incr(context.Background(), "userIncrId").Result()
 
 		sm := SuccessMessage{
-			ID:       int(userıncrid),
+			ID:       int(userIncrID),
 			UserName: usersignup.UserName,
 		}
+		usersignup.ID = int(userIncrID)
+		redisalldata := jsonConvert(w, usersignup)
+		stringid := strconv.Itoa(int(userIncrID))
 
-		response := jsonConvert(w, usersignup)
-		stringid := strconv.Itoa(int(userıncrid))
-		_, userinfoerr := rc.Set(context.Background(), "user:"+stringid, response, 0).Result()
+		_, userinfoerr := rc.Set(context.Background(), "user:"+stringid, redisalldata, 0).Result()
 		if userinfoerr != nil {
 			fmt.Println("Redis set user sign error:", userinfoerr)
 			return
 		}
+
+		_, usererr := rc.Set(context.Background(), "user:"+usersignup.UserName, userIncrID, 0).Result()
+		if usererr != nil {
+			fmt.Println("Redis set user sign error:", usererr)
+			return
+		}
+
 		responseSuccess(w, sm)
 		return
 	}

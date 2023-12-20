@@ -44,6 +44,8 @@ type User struct {
 	SurName  string `json:"surname"`
 }
 
-type UserId struct {
-	ID string `json:"id"`
+type RedisControlData struct {
+	ID       int    `json:"id"`
+	UserName string `json:"username"`
+	Password string `json:"password"`
 }
