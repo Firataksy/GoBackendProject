@@ -13,6 +13,7 @@ func main() {
 	mux.HandleFunc("/signup", signup)
 	mux.HandleFunc("/login", login)
 	mux.HandleFunc("/data", getUserData)
+	mux.HandleFunc("/updateuser", updateUserData)
 	err := http.ListenAndServe(":9000", mux)
 	if err != nil {
 		panic(err)

@@ -3,7 +3,7 @@ package main
 type Sign struct {
 	ID       int    `json:"id"`
 	UserName string `json:"username"`
-	Pwd      string `json:"password"`
+	Password string `json:"password"`
 	Name     string `json:"name"`
 	SurName  string `json:"surname"`
 }
@@ -48,4 +48,27 @@ type RedisControlData struct {
 	ID       int    `json:"id"`
 	UserName string `json:"username"`
 	Password string `json:"password"`
+}
+
+type UpdateNewUserData struct {
+	ID       int    `json:"id"`
+	UserName string `json:"username"`
+	Password string `json:"password"`
+	Name     string `json:"name"`
+	SurName  string `json:"surname"`
+}
+
+/* type UpdateUserData struct {
+	ID       int    `json:"id"`
+	UserName string `json:"username"`
+	Password string `json:"password"`
+	Name     string `json:"name"`
+	SurName  string `json:"surname"`
+} */
+
+type UpdateLastUserData struct {
+	ID       int    `json:"id"`
+	UserName string `json:"username"`
+	Name     string `json:"name"`
+	SurName  string `json:"surname"`
 }

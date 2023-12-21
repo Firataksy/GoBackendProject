@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -29,9 +29,9 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if usersignup.UserName != "" && usersignup.Pwd != "" && usersignup.Name != "" && usersignup.SurName != "" {
+	if usersignup.UserName != "" && usersignup.Password != "" && usersignup.Name != "" && usersignup.SurName != "" {
 
-		usersignup.Pwd = md5Encode(usersignup.Pwd)
+		usersignup.Password = md5Encode(usersignup.Password)
 
 		userIncrID, _ := rc.Incr(context.Background(), "userIncrId").Result()
 
@@ -39,19 +39,20 @@ func signup(w http.ResponseWriter, r *http.Request) {
 			ID:       int(userIncrID),
 			UserName: usersignup.UserName,
 		}
+
 		usersignup.ID = int(userIncrID)
 		redisalldata := jsonConvert(w, usersignup)
 		stringid := strconv.Itoa(int(userIncrID))
 
 		_, userinfoerr := rc.Set(context.Background(), "user:"+stringid, redisalldata, 0).Result()
 		if userinfoerr != nil {
-			fmt.Println("Redis set user sign error:", userinfoerr)
+			log.Fatal("Redis set user data sign error:", userinfoerr)
 			return
 		}
 
 		_, usererr := rc.Set(context.Background(), "user:"+usersignup.UserName, userIncrID, 0).Result()
 		if usererr != nil {
-			fmt.Println("Redis set user sign error:", usererr)
+			log.Fatal("Redis set user id sign error:", usererr)
 			return
 		}
 
