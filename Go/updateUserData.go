@@ -59,21 +59,23 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	hashedpwd := md5Encode(updatenewuserdata.Password)
+
 	updatenewuserdata.Password = hashedpwd
-	ulud := &UpdateLastUserData{
+
+	ud := &UpdateLastUserData{
 		ID:       updateuserdata.ID,
 		UserName: updatenewuserdata.UserName,
 		Name:     updatenewuserdata.Name,
 		SurName:  updatenewuserdata.SurName,
 	}
 
-	jsonresponse := jsonConvert(w, updatenewuserdata)
 	_, userinfoerr := rc.Rename(context.Background(), "user:"+updateuserdata.UserName, "user:"+updatenewuserdata.UserName).Result()
 	if userinfoerr != nil {
 		log.Fatal("Redis rename error:", userinfoerr)
 		return
 	}
 
+	jsonresponse := jsonConvert(w, updatenewuserdata)
 	_, userseterr := rc.Set(context.Background(), "user:"+idurl, jsonresponse, 0).Result()
 	if userseterr != nil {
 		log.Fatal("Redis set update all user data sign error:", userseterr)
@@ -85,5 +87,5 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseSuccess(w, ulud)
+	responseSuccess(w, ud)
 }
