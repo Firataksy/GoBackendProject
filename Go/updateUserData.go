@@ -8,9 +8,8 @@ import (
 )
 
 func updateUserData(w http.ResponseWriter, r *http.Request) {
-	var updateuserdata Sign
+	var userdata UserData
 	var updatenewuserdata UpdateNewUserData
-	var updatelastuserdata UpdateLastUserData
 
 	idurl := r.URL.Query().Get("id")
 
@@ -21,71 +20,55 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	checkuser, _ := rc.Get(context.Background(), "user:"+idurl).Result()
-	checkuserid, _ := rc.Get(context.Background(), "user:"+updatenewuserdata.UserName).Result()
-	checkusername, _ := rc.Get(context.Background(), "user:"+checkuserid).Result()
-
-	if checkusername != "" {
-		responseError(w, "Username is used")
-		return
-	}
 
 	if checkuser == "" {
 		responseError(w, "User not found")
 		return
 	}
 
-	json.Unmarshal([]byte(checkuser), &updateuserdata)
+	json.Unmarshal([]byte(checkuser), &userdata)
 
-	if updatenewuserdata.UserName == updateuserdata.UserName {
+	if updatenewuserdata.UserName == userdata.UserName {
 		responseError(w, "You already use this username")
 		return
 	}
-	updatenewuserdata.ID = updateuserdata.ID
 
-	if updatenewuserdata.UserName == "" {
-		updatenewuserdata.UserName = updateuserdata.UserName
-		updatelastuserdata.UserName = updateuserdata.UserName
-	}
-	if updatenewuserdata.Password == "" {
-		updatenewuserdata.Password = updateuserdata.Password
-	}
-	if updatenewuserdata.Name == "" {
-		updatenewuserdata.Name = updateuserdata.Name
-		updatelastuserdata.Name = updateuserdata.Name
-	}
-	if updatenewuserdata.SurName == "" {
-		updatenewuserdata.SurName = updateuserdata.SurName
-		updatelastuserdata.SurName = updateuserdata.SurName
-	}
+	checkuserid, _ := rc.Get(context.Background(), "user:"+updatenewuserdata.UserName).Result()
 
-	hashedpwd := md5Encode(updatenewuserdata.Password)
-
-	updatenewuserdata.Password = hashedpwd
-
-	ud := &UpdateLastUserData{
-		ID:       updateuserdata.ID,
-		UserName: updatenewuserdata.UserName,
-		Name:     updatenewuserdata.Name,
-		SurName:  updatenewuserdata.SurName,
-	}
-
-	_, userinfoerr := rc.Rename(context.Background(), "user:"+updateuserdata.UserName, "user:"+updatenewuserdata.UserName).Result()
-	if userinfoerr != nil {
-		log.Fatal("Redis rename error:", userinfoerr)
+	if checkuserid != "" {
+		responseError(w, "Username is used")
 		return
 	}
 
-	jsonresponse := jsonConvert(w, updatenewuserdata)
+	if updatenewuserdata.UserName != "" {
+		_, userrenameerr := rc.Rename(context.Background(), "user:"+userdata.UserName, "user:"+updatenewuserdata.UserName).Result()
+		if userrenameerr != nil {
+			log.Fatal("Redis rename error:", userrenameerr)
+			return
+		}
+	}
+
+	if updatenewuserdata.UserName != "" {
+		userdata.UserName = updatenewuserdata.UserName
+	}
+	if updatenewuserdata.Password != "" {
+		userdata.Password = updatenewuserdata.Password
+	}
+	if updatenewuserdata.Name != "" {
+		userdata.Name = updatenewuserdata.Name
+	}
+	if updatenewuserdata.SurName != "" {
+		userdata.SurName = updatenewuserdata.SurName
+	}
+
+	jsonresponse := jsonConvert(w, userdata)
+	userdata.Password = ""
+
 	_, userseterr := rc.Set(context.Background(), "user:"+idurl, jsonresponse, 0).Result()
 	if userseterr != nil {
-		log.Fatal("Redis set update all user data sign error:", userseterr)
-		return
-	}
-	_, usererr := rc.Set(context.Background(), "user:"+updatenewuserdata.UserName, idurl, 0).Result()
-	if usererr != nil {
-		log.Fatal("Redis set update user id data sign error:", usererr)
+		log.Fatal("Redis set update all new user data sign error:", userseterr)
 		return
 	}
 
-	responseSuccess(w, ud)
+	responseSuccess(w, userdata)
 }
