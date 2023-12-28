@@ -15,6 +15,7 @@ func main() {
 	mux.HandleFunc("/data", getUserData)
 	mux.HandleFunc("/updateuser", updateUserData)
 	mux.HandleFunc("/match", match)
+	mux.HandleFunc("/leaderboard", listLeaderBoard)
 	err := http.ListenAndServe(":9000", mux)
 	if err != nil {
 		panic(err)

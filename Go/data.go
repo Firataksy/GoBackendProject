@@ -32,8 +32,8 @@ type FailMessage struct {
 }
 
 type Response struct {
-	Status bool `json:"status"`
-	Data   interface{}
+	Status bool        `json:"status"`
+	Data   interface{} `json:"data"`
 }
 
 type User struct {
@@ -42,6 +42,7 @@ type User struct {
 	Pwd      string `json:"password"`
 	Name     string `json:"name"`
 	SurName  string `json:"surname"`
+	Puan     int    `json:"puan"`
 }
 
 type RedisControlData struct {
@@ -67,8 +68,37 @@ type UserData struct {
 }
 
 type Match struct {
-	userid1 int `json:"userid1"`
-	userid2 int `json:"userid2"`
-	score1  int `json:"score1"`
-	score2  int `json:"score2"`
+	Userid1 int `json:"userid1"`
+	Userid2 int `json:"userid2"`
+	Score1  int `json:"score1"`
+	Score2  int `json:"score2"`
+}
+
+type User1 struct {
+	ID       int    `json:"id"`
+	UserName string `json:"username"`
+	Pwd      string `json:"password"`
+	Name     string `json:"name"`
+	SurName  string `json:"surname"`
+	Puan     int    `json:"puan"`
+}
+
+type User2 struct {
+	ID       int    `json:"id"`
+	UserName string `json:"username"`
+	Pwd      string `json:"password"`
+	Name     string `json:"name"`
+	SurName  string `json:"surname"`
+	Puan     int    `json:"puan"`
+}
+
+type LeaderBoard struct {
+	Page  int `json:"page"`
+	Count int `json:"count"`
+}
+
+type UserLeaderBoard struct {
+	UserName string `json:"username"`
+	ID       int    `json:"id"`
+	Puan     int    `json:"puan"`
 }
