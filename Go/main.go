@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
@@ -36,7 +35,6 @@ func redisConnect() *redis.Client {
 func init() {
 
 	rc = redisConnect()
-	rc.FlushAll(context.Background())
 }
 
 func jsonConvert(w http.ResponseWriter, input interface{}) []byte {

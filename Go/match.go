@@ -13,6 +13,7 @@ import (
 
 func match(w http.ResponseWriter, r *http.Request) {
 	var match Match
+	/* var userdata UserLeaderBoard */
 	var user1 User1
 	var user2 User2
 
@@ -21,13 +22,13 @@ func match(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, er.Error(), http.StatusBadRequest)
 		return
 	}
-	if match.Userid1 == match.Userid2 {
+	if match.UserID1 == match.UserID2 {
 		responseError(w, "It cannot be the same in 2 users")
 		return
 	}
 
-	struserid1 := strconv.Itoa(match.Userid1)
-	struserid2 := strconv.Itoa(match.Userid2)
+	struserid1 := strconv.Itoa(match.UserID1)
+	struserid2 := strconv.Itoa(match.UserID2)
 	checkuser1, _ := rc.Get(context.Background(), "user:"+struserid1).Result()
 	checkuser2, _ := rc.Get(context.Background(), "user:"+struserid2).Result()
 
@@ -37,76 +38,76 @@ func match(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if match.Score1 > match.Score2 {
-		rc.ZRem(context.Background(), "leaderboard", user1.UserName)
 		json.Unmarshal([]byte(checkuser1), &user1)
-
-		user1.Puan += 3
-		z := &UserLeaderBoard{
-			UserName: user1.UserName,
-			ID:       user1.ID,
-			Puan:     user1.Puan,
-		}
+		user1.Score += 3
 		users1 := jsonConvert(w, user1)
 		_, user1winerror := rc.Set(context.Background(), "user:"+struserid1, users1, 0).Result()
 		if user1winerror != nil {
 			log.Fatal("User1 win set error", user1winerror)
 			return
 		}
-		rc.Set(context.Background(), "leaderboard", z, 0)
 
+		z := &redis.Z{
+			Score:  float64(user1.Score),
+			Member: user1.ID,
+		}
+
+		rc.ZAdd(context.Background(), "leaderboard", *z).Result()
 		responseSuccess(w, "")
 		return
 	}
 
 	if match.Score1 < match.Score2 {
-		rc.ZRem(context.Background(), "leaderboard", user2.UserName)
+
 		json.Unmarshal([]byte(checkuser2), &user2)
-		user2.Puan += 3
-		z := &redis.Z{
-			Score:  float64(user2.Puan),
-			Member: user2.UserName,
-		}
+		user2.Score += 3
+
 		users2 := jsonConvert(w, user2)
 		_, user2winerror := rc.Set(context.Background(), "user:"+struserid2, users2, 0).Result()
 		if user2winerror != nil {
 			log.Fatal("User2 win set error", user2winerror)
 			return
 		}
-
-		rc.ZAdd(context.Background(), "leaderboard", *z)
+		z := &redis.Z{
+			Score:  float64(user2.Score),
+			Member: user2.ID,
+		}
+		rc.ZAdd(context.Background(), "leaderboard", *z).Result()
 		responseSuccess(w, "")
+		return
 	}
 
 	if match.Score1 == match.Score2 {
-		rc.ZRem(context.Background(), "leaderboard", user1.UserName)
+
 		json.Unmarshal([]byte(checkuser1), &user1)
-		user1.Puan += 1
-		rz := &redis.Z{
-			Score:  float64(user1.Puan),
-			Member: user1.UserName,
-		}
+		user1.Score += 1
+
 		users1 := jsonConvert(w, user1)
 		_, user1drawerror := rc.Set(context.Background(), "user:"+struserid1, users1, 0).Result()
 		if user1drawerror != nil {
 			log.Fatal("User1 draw set error", user1drawerror)
 			return
 		}
-		rc.ZAdd(context.Background(), "leaderboard", *rz)
-
-		rc.ZRem(context.Background(), "leaderboard", user2.UserName)
-		json.Unmarshal([]byte(checkuser2), &user2)
-		user2.Puan += 1
-		z := &redis.Z{
-			Score:  float64(user2.Puan),
-			Member: user2.UserName,
+		rz := &redis.Z{
+			Score:  float64(user1.Score),
+			Member: user1.ID,
 		}
+		rc.ZAdd(context.Background(), "leaderboard", *rz).Result()
+
+		json.Unmarshal([]byte(checkuser2), &user2)
+		user2.Score += 1
+
 		users2 := jsonConvert(w, user2)
 		_, user2drawerror := rc.Set(context.Background(), "user:"+struserid2, users2, 0).Result()
 		if user2drawerror != nil {
 			log.Fatal("User2 draw set error", user2drawerror)
 			return
 		}
-		rc.ZAdd(context.Background(), "leaderboard", *z)
+		z := &redis.Z{
+			Score:  float64(user2.Score),
+			Member: user2.ID,
+		}
+		rc.ZAdd(context.Background(), "leaderboard", *z).Result()
 		responseSuccess(w, "")
 	}
 }

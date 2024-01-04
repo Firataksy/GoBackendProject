@@ -43,16 +43,13 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	if updatenewuserdata.UserName != "" {
 		_, userrenameerr := rc.Rename(context.Background(), "user:"+userdata.UserName, "user:"+updatenewuserdata.UserName).Result()
 		if userrenameerr != nil {
-			log.Fatal("Redis rename error:", userrenameerr)
-			return
+			log.Fatal("Not Renamed Username", userrenameerr)
 		}
-	}
-
-	if updatenewuserdata.UserName != "" {
 		userdata.UserName = updatenewuserdata.UserName
 	}
 	if updatenewuserdata.Password != "" {
-		userdata.Password = updatenewuserdata.Password
+		hashPWD := md5Encode(updatenewuserdata.Password)
+		userdata.Password = hashPWD
 	}
 	if updatenewuserdata.Name != "" {
 		userdata.Name = updatenewuserdata.Name
@@ -60,7 +57,6 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	if updatenewuserdata.SurName != "" {
 		userdata.SurName = updatenewuserdata.SurName
 	}
-
 	jsonresponse := jsonConvert(w, userdata)
 	userdata.Password = ""
 

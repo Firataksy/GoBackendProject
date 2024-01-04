@@ -10,14 +10,14 @@ import (
 func getUserData(w http.ResponseWriter, r *http.Request) {
 	var user User
 
-	idurl := r.URL.Query().Get("id")
-	idInt, err := strconv.Atoi(idurl)
+	idURL := r.URL.Query().Get("id")
+	idInt, err := strconv.Atoi(idURL)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	val, _ := rc.Get(context.Background(), "user:"+idurl).Result()
+	val, _ := rc.Get(context.Background(), "user:"+idURL).Result()
 
 	json.Unmarshal([]byte(val), &user)
 

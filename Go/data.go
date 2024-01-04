@@ -42,13 +42,7 @@ type User struct {
 	Pwd      string `json:"password"`
 	Name     string `json:"name"`
 	SurName  string `json:"surname"`
-	Puan     int    `json:"puan"`
-}
-
-type RedisControlData struct {
-	ID       int    `json:"id"`
-	UserName string `json:"username"`
-	Password string `json:"password"`
+	Score    int    `json:"score"`
 }
 
 type UpdateNewUserData struct {
@@ -65,11 +59,12 @@ type UserData struct {
 	Password string `json:"password"`
 	Name     string `json:"name"`
 	SurName  string `json:"surname"`
+	Score    int    `json:"score"`
 }
 
 type Match struct {
-	Userid1 int `json:"userid1"`
-	Userid2 int `json:"userid2"`
+	UserID1 int `json:"userid1"`
+	UserID2 int `json:"userid2"`
 	Score1  int `json:"score1"`
 	Score2  int `json:"score2"`
 }
@@ -80,7 +75,7 @@ type User1 struct {
 	Pwd      string `json:"password"`
 	Name     string `json:"name"`
 	SurName  string `json:"surname"`
-	Puan     int    `json:"puan"`
+	Score    int    `json:"score"`
 }
 
 type User2 struct {
@@ -89,7 +84,7 @@ type User2 struct {
 	Pwd      string `json:"password"`
 	Name     string `json:"name"`
 	SurName  string `json:"surname"`
-	Puan     int    `json:"puan"`
+	Score    int    `json:"score"`
 }
 
 type LeaderBoard struct {
@@ -98,7 +93,8 @@ type LeaderBoard struct {
 }
 
 type UserLeaderBoard struct {
-	UserName string `json:"username"`
-	ID       int    `json:"id"`
-	Puan     int    `json:"puan"`
+	Rank     int         `json:"rank"`
+	UserName interface{} `json:"username"`
+	UserID   int         `json:"id"`
+	Score    int         `json:"score"`
 }
