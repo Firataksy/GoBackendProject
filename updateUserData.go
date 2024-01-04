@@ -9,6 +9,7 @@ import (
 
 func updateUserData(w http.ResponseWriter, r *http.Request) {
 	var userData UserData
+	var updatedUser UpdatedUser
 	var updateNewUserData UpdateNewUserData
 
 	idUrl := r.URL.Query().Get("id")
@@ -46,6 +47,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 			log.Fatal("Not Renamed Username", userRenameErr)
 		}
 		userData.UserName = updateNewUserData.UserName
+		updatedUser.UserName = updateNewUserData.UserName
 	}
 	if updateNewUserData.Password != "" {
 		hashPWD := md5Encode(updateNewUserData.Password)
@@ -53,12 +55,13 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	}
 	if updateNewUserData.Name != "" {
 		userData.Name = updateNewUserData.Name
+		updatedUser.Name = updateNewUserData.Name
 	}
 	if updateNewUserData.SurName != "" {
 		userData.SurName = updateNewUserData.SurName
+		updatedUser.SurName = updateNewUserData.SurName
 	}
 	jsonResponse := jsonConvert(w, userData)
-	userData.Password = ""
 
 	_, userSetErr := rc.Set(context.Background(), "user:"+idUrl, jsonResponse, 0).Result()
 	if userSetErr != nil {
@@ -66,5 +69,5 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseSuccess(w, userData)
+	responseSuccess(w, updatedUser)
 }
