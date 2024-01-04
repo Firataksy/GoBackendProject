@@ -17,15 +17,15 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	checkuserid, _ := rc.Get(context.Background(), "user:"+userLogin.UserName).Result()
-	val, _ := rc.Get(context.Background(), "user:"+checkuserid).Result()
+	checkUserID, _ := rc.Get(context.Background(), "user:"+userLogin.UserName).Result()
+	val, _ := rc.Get(context.Background(), "user:"+checkUserID).Result()
 	json.Unmarshal([]byte(val), &user)
 	userLogin.Password = md5Encode(userLogin.Password)
-	intuserid, _ := strconv.Atoi(checkuserid)
+	intUserID, _ := strconv.Atoi(checkUserID)
 	if user.Pwd == userLogin.Password {
 
 		sm := SuccessMessage{
-			ID:       intuserid,
+			ID:       intUserID,
 			UserName: userLogin.UserName,
 		}
 
