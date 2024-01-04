@@ -8,51 +8,51 @@ import (
 	"strconv"
 )
 
-func signup(w http.ResponseWriter, r *http.Request) {
-	var usersignup Sign
+func signUp(w http.ResponseWriter, r *http.Request) {
+	var userSignUp Sign
 	var user User
 
-	err := json.NewDecoder(r.Body).Decode(&usersignup)
+	err := json.NewDecoder(r.Body).Decode(&userSignUp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	checkusername, _ := rc.Get(context.Background(), "user:"+usersignup.UserName).Result()
+	checkUserName, _ := rc.Get(context.Background(), "user:"+userSignUp.UserName).Result()
 
-	check, _ := rc.Get(context.Background(), "user:"+checkusername).Result()
+	check, _ := rc.Get(context.Background(), "user:"+checkUserName).Result()
 
 	json.Unmarshal([]byte(check), &user)
 
-	if user.UserName == usersignup.UserName {
+	if user.UserName == userSignUp.UserName {
 		responseError(w, "Username is used")
 		return
 	}
 
-	if usersignup.UserName != "" && usersignup.Password != "" && usersignup.Name != "" && usersignup.SurName != "" {
+	if userSignUp.UserName != "" && userSignUp.Password != "" && userSignUp.Name != "" && userSignUp.SurName != "" {
 
-		usersignup.Password = md5Encode(usersignup.Password)
+		userSignUp.Password = md5Encode(userSignUp.Password)
 
 		userIncrID, _ := rc.Incr(context.Background(), "userIncrId").Result()
 
 		sm := SuccessMessage{
 			ID:       int(userIncrID),
-			UserName: usersignup.UserName,
+			UserName: userSignUp.UserName,
 		}
 
-		usersignup.ID = int(userIncrID)
-		redisalldata := jsonConvert(w, usersignup)
-		stringid := strconv.Itoa(int(userIncrID))
+		userSignUp.ID = int(userIncrID)
+		redisAllData := jsonConvert(w, userSignUp)
+		stringID := strconv.Itoa(int(userIncrID))
 
-		_, userinfoerr := rc.Set(context.Background(), "user:"+stringid, redisalldata, 0).Result()
-		if userinfoerr != nil {
-			log.Fatal("Redis set user data sign error:", userinfoerr)
+		_, userInfoErr := rc.Set(context.Background(), "user:"+stringID, redisAllData, 0).Result()
+		if userInfoErr != nil {
+			log.Fatal("Redis set user data sign error:", userInfoErr)
 			return
 		}
 
-		_, usererr := rc.Set(context.Background(), "user:"+usersignup.UserName, userIncrID, 0).Result()
-		if usererr != nil {
-			log.Fatal("Redis set user id sign error:", usererr)
+		_, userErr := rc.Set(context.Background(), "user:"+userSignUp.UserName, userIncrID, 0).Result()
+		if userErr != nil {
+			log.Fatal("Redis set user id sign error:", userErr)
 			return
 		}
 

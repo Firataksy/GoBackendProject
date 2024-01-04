@@ -10,7 +10,7 @@ import (
 
 func main() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/signup", signup)
+	mux.HandleFunc("/signup", signUp)
 	mux.HandleFunc("/login", login)
 	mux.HandleFunc("/data", getUserData)
 	mux.HandleFunc("/updateuser", updateUserData)
