@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/redis/go-redis/v9"
@@ -15,6 +16,7 @@ func main() {
 	mux.HandleFunc("/updateuser", updateUserData)
 	mux.HandleFunc("/match", match)
 	mux.HandleFunc("/leaderboard", listLeaderBoard)
+	fmt.Println("http listen started")
 	err := http.ListenAndServe(":9000", mux)
 	if err != nil {
 		panic(err)
