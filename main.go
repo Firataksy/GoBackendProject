@@ -48,10 +48,6 @@ func jsonConvert(w http.ResponseWriter, input interface{}) []byte {
 	return Json
 }
 
-func jsonWrite(w http.ResponseWriter, input []byte) {
-	w.Write(input)
-}
-
 func responseSuccess(w http.ResponseWriter, input interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -62,7 +58,7 @@ func responseSuccess(w http.ResponseWriter, input interface{}) {
 	}
 
 	response := jsonConvert(w, rp)
-	jsonWrite(w, response)
+	w.Write(response)
 }
 
 func responseError(w http.ResponseWriter, input string) {
@@ -73,5 +69,5 @@ func responseError(w http.ResponseWriter, input string) {
 	}
 
 	response := jsonConvert(w, ms)
-	jsonWrite(w, response)
+	w.Write(response)
 }

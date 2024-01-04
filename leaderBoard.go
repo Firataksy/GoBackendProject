@@ -21,10 +21,17 @@ func listLeaderBoard(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, er.Error(), http.StatusBadRequest)
 		return
 	}
+	firstCount := (leaderBoard.Page - 1) * leaderBoard.Count
+	lastCount := (firstCount + leaderBoard.Count - 1)
 
-	leaderBoardList, err := rc.ZRevRangeWithScores(context.Background(), "leaderboard", 0, -1).Result()
+	leaderBoardList, err := rc.ZRevRangeWithScores(context.Background(), "leaderboard", int64(firstCount), int64(lastCount)).Result()
 	if err != nil {
 		log.Fatal("ERR list leaderboard", err)
+		return
+	}
+
+	if firstCount < 0 {
+		responseError(w, "Invalid page number")
 		return
 	}
 
@@ -41,18 +48,5 @@ func listLeaderBoard(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	firstCount := (leaderBoard.Page - 1) * leaderBoard.Count
-	lastCount := firstCount + leaderBoard.Count
-
-	if firstCount < 0 || firstCount >= len(leaderBoardList) {
-		responseError(w, "Invalid page number")
-		return
-	}
-
-	if lastCount > len(leaderBoardList) {
-		lastCount = len(leaderBoardList)
-	}
-
-	list := leaderBoardSlice[firstCount:lastCount]
-	responseSuccess(w, list)
+	responseSuccess(w, leaderBoardSlice)
 }
