@@ -13,7 +13,6 @@ import (
 
 func match(w http.ResponseWriter, r *http.Request) {
 	var match Match
-	/* var userdata UserLeaderBoard */
 	var user1 User1
 	var user2 User2
 
