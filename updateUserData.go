@@ -28,6 +28,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.Unmarshal([]byte(checkUser), &userData)
+	json.Unmarshal([]byte(checkUser), &updatedUser)
 
 	if updateNewUserData.UserName == userData.UserName {
 		responseError(w, "You already use this username")
