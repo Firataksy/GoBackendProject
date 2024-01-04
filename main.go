@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -35,8 +38,23 @@ func redisConnect() *redis.Client {
 }
 
 func init() {
-
 	rc = redisConnect()
+	rand.Seed(time.Now().UnixNano())
+}
+
+var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func RandStringRunes(n int) string {
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
+}
+
+func idCreate() int64 {
+	userIncrID, _ := rc.Incr(context.Background(), "userIncrId").Result()
+	return userIncrID
 }
 
 func jsonConvert(w http.ResponseWriter, input interface{}) []byte {
