@@ -32,17 +32,15 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 	if userSignUp.UserName != "" && userSignUp.Password != "" && userSignUp.Name != "" && userSignUp.SurName != "" {
 
 		userSignUp.Password = md5Encode(userSignUp.Password)
-
-		userIncrID, _ := rc.Incr(context.Background(), "userIncrId").Result()
-
+		id := idCreate()
 		sm := SuccessMessage{
-			ID:       int(userIncrID),
+			ID:       int(id),
 			UserName: userSignUp.UserName,
 		}
 
-		userSignUp.ID = int(userIncrID)
+		userSignUp.ID = int(id)
 		redisAllData := jsonConvert(w, userSignUp)
-		stringID := strconv.Itoa(int(userIncrID))
+		stringID := strconv.Itoa(int(id))
 
 		_, userInfoErr := rc.Set(context.Background(), "user:"+stringID, redisAllData, 0).Result()
 		if userInfoErr != nil {
@@ -50,7 +48,7 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		_, userErr := rc.Set(context.Background(), "user:"+userSignUp.UserName, userIncrID, 0).Result()
+		_, userErr := rc.Set(context.Background(), "user:"+userSignUp.UserName, int(id), 0).Result()
 		if userErr != nil {
 			log.Fatal("Redis set user id sign error:", userErr)
 			return
