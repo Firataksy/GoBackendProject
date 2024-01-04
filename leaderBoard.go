@@ -17,6 +17,10 @@ func listLeaderBoard(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("ERR", er)
 		return
 	}
+	if leaderBoard.Count < 0 || leaderBoard.Page < 0 {
+		http.Error(w, er.Error(), http.StatusBadRequest)
+		return
+	}
 
 	leaderBoardList, err := rc.ZRevRangeWithScores(context.Background(), "leaderboard", 0, -1).Result()
 	if err != nil {
