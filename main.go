@@ -19,7 +19,7 @@ func main() {
 	fmt.Println("http listen started")
 	err := http.ListenAndServe(":9000", mux)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 }
 
