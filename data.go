@@ -45,6 +45,13 @@ type User struct {
 	Score    int    `json:"score"`
 }
 
+type UpdatedUser struct {
+	ID       int    `json:"id"`
+	UserName string `json:"username"`
+	Name     string `json:"name"`
+	SurName  string `json:"surname"`
+}
+
 type UpdateNewUserData struct {
 	ID       int    `json:"id"`
 	UserName string `json:"username"`
