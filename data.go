@@ -105,3 +105,7 @@ type UserLeaderBoard struct {
 	UserID   int         `json:"id"`
 	Score    int         `json:"score"`
 }
+
+type Simulation struct {
+	Count int `json:"count"`
+}

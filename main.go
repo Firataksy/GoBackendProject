@@ -19,6 +19,7 @@ func main() {
 	mux.HandleFunc("/updateuser", updateUserData)
 	mux.HandleFunc("/match", match)
 	mux.HandleFunc("/leaderboard", listLeaderBoard)
+	mux.HandleFunc("/simulation", simulation)
 	fmt.Println("http listen started")
 	err := http.ListenAndServe(":9000", mux)
 	if err != nil {
