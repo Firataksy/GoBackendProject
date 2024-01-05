@@ -80,7 +80,6 @@ func jsonConvert(w http.ResponseWriter, input interface{}) []byte {
 
 func responseSuccess(w http.ResponseWriter, input interface{}) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 
 	rp := Response{
 		Status: true,

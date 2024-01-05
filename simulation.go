@@ -67,7 +67,7 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 		ru := registerUser(w)
 		users[i] = ru
 		/* autoMatch(users) */
-		_, er := rc.Set(context.Background(), "ID:"+ru.UserName, ru.ID, 0).Result()
+		_, er := rc.Set(context.Background(), "userID:"+ru.UserName, ru.ID, 0).Result()
 		if er != nil {
 			log.Fatal("Set User ID err: ", er)
 		}
@@ -77,10 +77,9 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 		ru.Password = hashPwd
 		ruJson := jsonConvert(w, ru)
 
-		_, error := rc.Set(context.Background(), "player_"+id, ruJson, 0).Result()
+		_, error := rc.Set(context.Background(), "user:player_"+id, ruJson, 0).Result()
 		if error != nil {
 			log.Fatal("Set User Data err: ", error)
 		}
-
 	}
 }

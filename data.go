@@ -43,6 +43,7 @@ type User struct {
 	Pwd      string `json:"password"`
 	Name     string `json:"name"`
 	SurName  string `json:"surname"`
+	Score    int    `json:"score"`
 }
 
 type UpdatedUser struct {
