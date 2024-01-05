@@ -18,9 +18,9 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	checkUserName, _ := rc.Get(context.Background(), "user:"+userSignUp.UserName).Result()
+	checkUserName, _ := rc.Get(context.Background(), "ID:"+userSignUp.UserName).Result()
 
-	check, _ := rc.Get(context.Background(), "user:"+checkUserName).Result()
+	check, _ := rc.Get(context.Background(), "ID:"+checkUserName).Result()
 
 	json.Unmarshal([]byte(check), &user)
 

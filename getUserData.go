@@ -17,7 +17,7 @@ func getUserData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	val, _ := rc.Get(context.Background(), "user:"+idURL).Result()
+	val, _ := rc.Get(context.Background(), "player_"+idURL).Result()
 
 	json.Unmarshal([]byte(val), &user)
 

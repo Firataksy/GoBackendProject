@@ -37,7 +37,7 @@ func listLeaderBoard(w http.ResponseWriter, r *http.Request) {
 
 	leaderBoardSlice := make([]UserLeaderBoard, len(leaderBoardList))
 	for rank, data := range leaderBoardList {
-		data, _ := rc.Get(context.Background(), "user:"+data.Member.(string)).Result()
+		data, _ := rc.Get(context.Background(), data.Member.(string)).Result()
 		json.Unmarshal([]byte(data), &userData)
 
 		leaderBoardSlice[rank] = UserLeaderBoard{
