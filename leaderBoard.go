@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 )
@@ -38,9 +37,11 @@ func listLeaderBoard(w http.ResponseWriter, r *http.Request) {
 
 	leaderBoardSlice := make([]UserLeaderBoard, len(leaderBoardList))
 	for rank, data := range leaderBoardList {
-		data, _ := rc.Get(context.Background(), "user:player_"+data.Member.(string)).Result()
-		json.Unmarshal([]byte(data), &userData)
-		fmt.Println(userData)
+		s, _ := rc.Get(context.Background(), "user:player_"+data.Member.(string)).Result()
+		err := json.Unmarshal([]byte(s), &userData)
+		if err != nil {
+			log.Fatal("Unmarshal err:", err)
+		}
 		leaderBoardSlice[rank] = UserLeaderBoard{
 			Rank:     rank + 1,
 			UserID:   userData.UserID,
@@ -48,6 +49,5 @@ func listLeaderBoard(w http.ResponseWriter, r *http.Request) {
 			UserName: userData.UserName,
 		}
 	}
-
 	responseSuccess(w, leaderBoardSlice)
 }
