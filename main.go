@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -87,4 +89,20 @@ func responseError(w http.ResponseWriter, input string) {
 
 	response := jsonConvert(w, ms)
 	w.Write(response)
+}
+
+func redisSetData(w http.ResponseWriter, id int, data interface{}) {
+	strID := strconv.Itoa(id)
+	_, er := rc.Set(context.Background(), "user:player_"+strID, data, 0).Result()
+	if er != nil {
+		log.Fatal("Set User ID err: ", er)
+	}
+}
+
+func redisSetID(w http.ResponseWriter, username string, id int) {
+
+	_, er := rc.Set(context.Background(), "userID:"+username, id, 0).Result()
+	if er != nil {
+		log.Fatal("Set User ID err: ", er)
+	}
 }

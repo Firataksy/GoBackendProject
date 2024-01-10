@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -20,7 +19,7 @@ func registerUser(w http.ResponseWriter) *Sign {
 		UserName: "player_" + strID,
 		Password: "12345",
 		Name:     RandStringRunes(5),
-		SurName:  RandStringRunes(5),
+		SurName:  RandStringRunes(6),
 	}
 	sm := SuccessMessage{
 		ID:       sn.ID,
@@ -31,14 +30,9 @@ func registerUser(w http.ResponseWriter) *Sign {
 }
 
 func win(w http.ResponseWriter, user *Sign) {
-	strID := strconv.Itoa(user.ID)
 	user.Score += 3
 	users := jsonConvert(w, user)
-	_, user1WinError := rc.Set(context.Background(), "user:player_"+strID, users, 0).Result()
-	if user1WinError != nil {
-		log.Fatal("User1 win set error", user1WinError)
-		return
-	}
+	redisSetData(w, user.ID, users)
 
 	z := &redis.Z{
 		Score:  float64(user.Score),
@@ -51,13 +45,9 @@ func win(w http.ResponseWriter, user *Sign) {
 func draw(w http.ResponseWriter, user1 *Sign, user2 *Sign) {
 	user1.Score += 1
 	user2.Score += 1
-	str1ID := strconv.Itoa(user1.ID)
+
 	users1 := jsonConvert(w, user1)
-	_, user1WinError := rc.Set(context.Background(), "user:player_"+str1ID, users1, 0).Result()
-	if user1WinError != nil {
-		log.Fatal("User1 win set error", user1WinError)
-		return
-	}
+	redisSetData(w, user1.ID, users1)
 
 	z := &redis.Z{
 		Score:  float64(user1.Score),
@@ -66,13 +56,9 @@ func draw(w http.ResponseWriter, user1 *Sign, user2 *Sign) {
 
 	rc.ZAdd(context.Background(), "leaderboard", *z).Result()
 
-	str2ID := strconv.Itoa(user2.ID)
 	users2 := jsonConvert(w, user2)
-	_, user2WinError := rc.Set(context.Background(), "user:player_"+str2ID, users2, 0).Result()
-	if user2WinError != nil {
-		log.Fatal("User1 win set error", user2WinError)
-		return
-	}
+	redisSetData(w, user2.ID, users2)
+
 	rz := &redis.Z{
 		Score:  float64(user2.Score),
 		Member: user2.ID,
@@ -118,20 +104,12 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < sim.Count; i++ {
 		ru := registerUser(w)
 		users[i] = ru
-
-		_, er := rc.Set(context.Background(), "userID:"+ru.UserName, ru.ID, 0).Result()
-		if er != nil {
-			log.Fatal("Set User ID err: ", er)
-		}
-
-		id := strconv.Itoa(ru.ID)
 		hashPwd := md5Encode(ru.Password)
 		ru.Password = hashPwd
 		ruJson := jsonConvert(w, ru)
-		_, error := rc.Set(context.Background(), "user:player_"+id, ruJson, 0).Result()
-		if error != nil {
-			log.Fatal("Set User Data err: ", error)
-		}
+
+		redisSetData(w, ru.ID, ruJson)
+		redisSetID(w, ru.UserName, ru.ID)
 	}
 	autoMatch(w, users)
 }
