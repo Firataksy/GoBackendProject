@@ -128,7 +128,6 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 		hashPwd := md5Encode(ru.Password)
 		ru.Password = hashPwd
 		ruJson := jsonConvert(w, ru)
-
 		_, error := rc.Set(context.Background(), "user:player_"+id, ruJson, 0).Result()
 		if error != nil {
 			log.Fatal("Set User Data err: ", error)
