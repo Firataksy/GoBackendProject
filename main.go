@@ -91,18 +91,23 @@ func responseError(w http.ResponseWriter, input string) {
 	w.Write(response)
 }
 
-func redisSetData(id int, data interface{}) {
+func redisSetJustData(id int, data interface{}) {
 	strID := strconv.Itoa(id)
 	_, er := rc.Set(context.Background(), "user:player_"+strID, data, 0).Result()
 	if er != nil {
-		log.Fatal("Set User ID err: ", er)
+		log.Fatal("Set User data err: ", er)
 	}
 }
 
-func redisSetID(username string, id int) {
+func redisSetJustID(username string, id int) {
 
 	_, er := rc.Set(context.Background(), "userID:"+username, id, 0).Result()
 	if er != nil {
 		log.Fatal("Set User ID err: ", er)
 	}
+}
+
+func redisSetDataAndID(username string, id int, data interface{}) {
+	redisSetJustData(id, data)
+	redisSetJustID(username, id)
 }

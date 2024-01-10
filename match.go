@@ -38,7 +38,7 @@ func match(w http.ResponseWriter, r *http.Request) {
 		json.Unmarshal([]byte(checkUser1), &user1)
 		user1.Score += 3
 		users1 := jsonConvert(w, user1)
-		redisSetData(match.UserID1, users1)
+		redisSetJustData(match.UserID1, users1)
 
 		z := &redis.Z{
 			Score:  float64(user1.Score),
@@ -56,7 +56,7 @@ func match(w http.ResponseWriter, r *http.Request) {
 		user2.Score += 3
 
 		users2 := jsonConvert(w, user2)
-		redisSetData(match.UserID2, users2)
+		redisSetJustData(match.UserID2, users2)
 		z := &redis.Z{
 			Score:  float64(user2.Score),
 			Member: user2.ID,
@@ -72,7 +72,7 @@ func match(w http.ResponseWriter, r *http.Request) {
 		user1.Score += 1
 
 		users1 := jsonConvert(w, user1)
-		redisSetData(match.UserID1, users1)
+		redisSetJustData(match.UserID1, users1)
 
 		rz := &redis.Z{
 			Score:  float64(user1.Score),
@@ -84,7 +84,7 @@ func match(w http.ResponseWriter, r *http.Request) {
 		user2.Score += 1
 
 		users2 := jsonConvert(w, user2)
-		redisSetData(match.UserID2, users2)
+		redisSetJustData(match.UserID2, users2)
 		z := &redis.Z{
 			Score:  float64(user2.Score),
 			Member: user2.ID,

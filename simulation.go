@@ -32,7 +32,7 @@ func registerUser(w http.ResponseWriter) *Sign {
 func win(w http.ResponseWriter, user *Sign) {
 	user.Score += 3
 	users := jsonConvert(w, user)
-	redisSetData(user.ID, users)
+	redisSetJustData(user.ID, users)
 
 	z := &redis.Z{
 		Score:  float64(user.Score),
@@ -47,7 +47,7 @@ func draw(w http.ResponseWriter, user1 *Sign, user2 *Sign) {
 	user2.Score += 1
 
 	users1 := jsonConvert(w, user1)
-	redisSetData(user1.ID, users1)
+	redisSetJustData(user1.ID, users1)
 
 	z := &redis.Z{
 		Score:  float64(user1.Score),
@@ -57,7 +57,7 @@ func draw(w http.ResponseWriter, user1 *Sign, user2 *Sign) {
 	rc.ZAdd(context.Background(), "leaderboard", *z).Result()
 
 	users2 := jsonConvert(w, user2)
-	redisSetData(user2.ID, users2)
+	redisSetJustData(user2.ID, users2)
 
 	rz := &redis.Z{
 		Score:  float64(user2.Score),
@@ -108,8 +108,7 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 		ru.Password = hashPwd
 		ruJson := jsonConvert(w, ru)
 
-		redisSetData(ru.ID, ruJson)
-		redisSetID(ru.UserName, ru.ID)
+		redisSetDataAndID(ru.UserName, ru.ID, ruJson)
 	}
 	autoMatch(w, users)
 }

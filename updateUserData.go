@@ -65,7 +65,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	}
 	jsonResponse := jsonConvert(w, userData)
 	intID, _ := strconv.Atoi(idUrl)
-	redisSetData(intID, jsonResponse)
+	redisSetJustData(intID, jsonResponse)
 
 	responseSuccess(w, updatedUser)
 }
