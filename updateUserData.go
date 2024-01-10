@@ -20,7 +20,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	checkUser, _ := rc.Get(context.Background(), "user:"+idUrl).Result()
+	checkUser, _ := rc.Get(context.Background(), "user:player_"+idUrl).Result()
 
 	if checkUser == "" {
 		responseError(w, "User not found")
@@ -64,7 +64,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	}
 	jsonResponse := jsonConvert(w, userData)
 
-	_, userSetErr := rc.Set(context.Background(), "user:"+idUrl, jsonResponse, 0).Result()
+	_, userSetErr := rc.Set(context.Background(), "user:player_"+idUrl, jsonResponse, 0).Result()
 	if userSetErr != nil {
 		log.Fatal("Redis set update all new user data sign error:", userSetErr)
 		return

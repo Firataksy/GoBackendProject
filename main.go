@@ -43,15 +43,26 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
 func RandStringRunes(n int) string {
+	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	b := make([]rune, n)
 	for i := range b {
 		b[i] = letterRunes[rand.Intn(len(letterRunes))]
 	}
 	return string(b)
 }
+
+/* func RandIntRunes(n int) int {
+	var letterRunes = []rune(int(01234567))
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
+	score := rand.Intn(10 - 0)
+	return score
+
+} */
 
 func idCreate() int64 {
 	userIncrID, _ := rc.Incr(context.Background(), "userIncrId").Result()
@@ -69,7 +80,6 @@ func jsonConvert(w http.ResponseWriter, input interface{}) []byte {
 
 func responseSuccess(w http.ResponseWriter, input interface{}) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 
 	rp := Response{
 		Status: true,

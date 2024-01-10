@@ -6,6 +6,7 @@ type Sign struct {
 	Password string `json:"password"`
 	Name     string `json:"name"`
 	SurName  string `json:"surname"`
+	Score    int    `json:"score"`
 }
 
 type Login struct {
