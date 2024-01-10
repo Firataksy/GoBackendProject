@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func updateUserData(w http.ResponseWriter, r *http.Request) {
@@ -63,12 +64,8 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 		updatedUser.SurName = updateNewUserData.SurName
 	}
 	jsonResponse := jsonConvert(w, userData)
-
-	_, userSetErr := rc.Set(context.Background(), "user:player_"+idUrl, jsonResponse, 0).Result()
-	if userSetErr != nil {
-		log.Fatal("Redis set update all new user data sign error:", userSetErr)
-		return
-	}
+	intID, _ := strconv.Atoi(idUrl)
+	redisSetData(w, intID, jsonResponse)
 
 	responseSuccess(w, updatedUser)
 }
