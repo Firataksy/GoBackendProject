@@ -93,7 +93,7 @@ func responseError(w http.ResponseWriter, input string) {
 
 func redisSetJustData(id int, data interface{}) {
 	strID := strconv.Itoa(id)
-	_, er := rc.Set(context.Background(), "user:player_"+strID, data, 0).Result()
+	_, er := rc.Set(context.Background(), "player_"+strID, data, 0).Result()
 	if er != nil {
 		log.Fatal("Set User data err: ", er)
 	}

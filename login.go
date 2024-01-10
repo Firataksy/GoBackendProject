@@ -18,7 +18,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	checkUserID, _ := rc.Get(context.Background(), "userID:"+userLogin.UserName).Result()
-	val, _ := rc.Get(context.Background(), "user:player_"+checkUserID).Result()
+	val, _ := rc.Get(context.Background(), "player_"+checkUserID).Result()
 	json.Unmarshal([]byte(val), &user)
 	userLogin.Password = md5Encode(userLogin.Password)
 	intUserID, _ := strconv.Atoi(checkUserID)

@@ -21,7 +21,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	checkUser, _ := rc.Get(context.Background(), "user:player_"+idUrl).Result()
+	checkUser, _ := rc.Get(context.Background(), "player_"+idUrl).Result()
 
 	if checkUser == "" {
 		responseError(w, "User not found")
@@ -36,7 +36,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	checkUserID, _ := rc.Get(context.Background(), "user:"+updateNewUserData.UserName).Result()
+	checkUserID, _ := rc.Get(context.Background(), updateNewUserData.UserName).Result()
 
 	if checkUserID != "" {
 		responseError(w, "Username is used")
@@ -44,7 +44,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if updateNewUserData.UserName != "" {
-		_, userRenameErr := rc.Rename(context.Background(), "user:"+userData.UserName, "user:"+updateNewUserData.UserName).Result()
+		_, userRenameErr := rc.Rename(context.Background(), userData.UserName, updateNewUserData.UserName).Result()
 		if userRenameErr != nil {
 			log.Fatal("Not Renamed Username", userRenameErr)
 		}

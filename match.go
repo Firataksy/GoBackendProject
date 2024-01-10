@@ -27,8 +27,8 @@ func match(w http.ResponseWriter, r *http.Request) {
 
 	strUserID1 := strconv.Itoa(match.UserID1)
 	strUserID2 := strconv.Itoa(match.UserID2)
-	checkUser1, _ := rc.Get(context.Background(), "user:player_"+strUserID1).Result()
-	checkUser2, _ := rc.Get(context.Background(), "user:player_"+strUserID2).Result()
+	checkUser1, _ := rc.Get(context.Background(), "player_"+strUserID1).Result()
+	checkUser2, _ := rc.Get(context.Background(), "player_"+strUserID2).Result()
 	if checkUser1 == "" || checkUser2 == "" {
 		responseError(w, "User not found")
 		return
