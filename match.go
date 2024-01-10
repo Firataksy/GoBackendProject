@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"log"
 	"net/http"
@@ -31,7 +30,6 @@ func match(w http.ResponseWriter, r *http.Request) {
 	strUserID2 := strconv.Itoa(match.UserID2)
 	checkUser1, _ := rc.Get(context.Background(), "user:player_"+strUserID1).Result()
 	checkUser2, _ := rc.Get(context.Background(), "user:player_"+strUserID2).Result()
-	fmt.Println(strUserID1, strUserID2)
 	if checkUser1 == "" || checkUser2 == "" {
 		responseError(w, "User not found")
 		return

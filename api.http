@@ -1,0 +1,7 @@
+GET http://localhost:9000/leaderboard
+content-type: application/json
+
+{
+    "page": 2,
+    "count": 10
+}
