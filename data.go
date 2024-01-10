@@ -101,7 +101,6 @@ type LeaderBoard struct {
 }
 
 type UserLeaderBoard struct {
-	Rank     int         `json:"rank"`
 	UserName interface{} `json:"username"`
 	UserID   int         `json:"id"`
 	Score    int         `json:"score"`

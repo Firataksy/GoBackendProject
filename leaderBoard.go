@@ -36,14 +36,13 @@ func listLeaderBoard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	leaderBoardSlice := make([]UserLeaderBoard, len(leaderBoardList))
-	for rank, data := range leaderBoardList {
+	for i, data := range leaderBoardList {
 		s, _ := rc.Get(context.Background(), "player_"+data.Member.(string)).Result()
 		err := json.Unmarshal([]byte(s), &userData)
 		if err != nil {
 			log.Fatal("Unmarshal err:", err)
 		}
-		leaderBoardSlice[rank] = UserLeaderBoard{
-			Rank:     rank + 1,
+		leaderBoardSlice[i] = UserLeaderBoard{
 			UserID:   userData.UserID,
 			Score:    userData.Score,
 			UserName: userData.UserName,
