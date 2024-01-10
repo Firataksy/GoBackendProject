@@ -3,9 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
-	"strconv"
 )
 
 func signUp(w http.ResponseWriter, r *http.Request) {
@@ -37,19 +35,9 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 
 		userSignUp.ID = int(id)
 		redisAllData := jsonConvert(w, userSignUp)
-		stringID := strconv.Itoa(int(id))
 
-		_, userInfoErr := rc.Set(context.Background(), "user:"+stringID, redisAllData, 0).Result()
-		if userInfoErr != nil {
-			log.Fatal("Redis set user data sign error:", userInfoErr)
-			return
-		}
-
-		_, userErr := rc.Set(context.Background(), "user:"+userSignUp.UserName, int(id), 0).Result()
-		if userErr != nil {
-			log.Fatal("Redis set user id sign error:", userErr)
-			return
-		}
+		redisSetData(w, int(id), redisAllData)
+		redisSetID(w, userSignUp.UserName, int(id))
 
 		responseSuccess(w, sm)
 		return
