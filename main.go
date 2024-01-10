@@ -52,18 +52,6 @@ func RandStringRunes(n int) string {
 	return string(b)
 }
 
-/* func RandIntRunes(n int) int {
-	var letterRunes = []rune(int(01234567))
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
-	score := rand.Intn(10 - 0)
-	return score
-
-} */
-
 func idCreate() int64 {
 	userIncrID, _ := rc.Incr(context.Background(), "userIncrId").Result()
 	return userIncrID
