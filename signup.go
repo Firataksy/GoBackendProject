@@ -18,12 +18,9 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	checkUserName, _ := rc.Get(context.Background(), "ID:"+userSignUp.UserName).Result()
-
-	check, _ := rc.Get(context.Background(), "ID:"+checkUserName).Result()
-
+	UserID, _ := rc.Get(context.Background(), "userID:"+userSignUp.UserName).Result()
+	check, _ := rc.Get(context.Background(), "user:player_"+UserID).Result()
 	json.Unmarshal([]byte(check), &user)
-
 	if user.UserName == userSignUp.UserName {
 		responseError(w, "Username is used")
 		return
