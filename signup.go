@@ -34,9 +34,8 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 		}
 
 		userSignUp.ID = int(id)
-		redisAllData := jsonConvert(w, userSignUp)
 
-		redisSetJustData(w, int(id), redisAllData)
+		redisSetJustData(w, &userSignUp)
 		redisSetJustID(userSignUp.UserName, int(id))
 
 		responseSuccess(w, sm)

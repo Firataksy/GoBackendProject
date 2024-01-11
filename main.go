@@ -91,9 +91,9 @@ func responseError(w http.ResponseWriter, input string) {
 	w.Write(response)
 }
 
-func redisSetJustData(w http.ResponseWriter, id int, data interface{}) {
+func redisSetJustData(w http.ResponseWriter, data *Sign) {
 	jsonData := jsonConvert(w, data)
-	strID := strconv.Itoa(id)
+	strID := strconv.Itoa(data.ID)
 	_, er := rc.Set(context.Background(), "player_"+strID, jsonData, 0).Result()
 	if er != nil {
 		log.Fatal("Set User data err: ", er)
@@ -107,10 +107,9 @@ func redisSetJustID(username string, id int) {
 	}
 }
 
-func redisSetDataAndID(w http.ResponseWriter, username string, id int, data interface{}) {
-	jsonData := jsonConvert(w, data)
-	redisSetJustData(w, id, jsonData)
-	redisSetJustID(username, id)
+func redisSetDataAndID(w http.ResponseWriter, data *Sign) {
+	redisSetJustData(w, data)
+	redisSetJustID(data.UserName, data.ID)
 }
 
 func redisSetLeaderBoard(user *Sign) {

@@ -5,11 +5,10 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 func updateUserData(w http.ResponseWriter, r *http.Request) {
-	var userData User
+	var userData *Sign
 	var updatedUser UpdatedUser
 	var updateNewUserData UpdateNewUserData
 
@@ -53,7 +52,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	}
 	if updateNewUserData.Password != "" {
 		hashPWD := md5Encode(updateNewUserData.Password)
-		userData.Pwd = hashPWD
+		userData.Password = hashPWD
 	}
 	if updateNewUserData.Name != "" {
 		userData.Name = updateNewUserData.Name
@@ -63,8 +62,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 		userData.SurName = updateNewUserData.SurName
 		updatedUser.SurName = updateNewUserData.SurName
 	}
-	intID, _ := strconv.Atoi(idUrl)
-	redisSetJustData(w, intID, userData)
+	redisSetJustData(w, userData)
 
 	responseSuccess(w, updatedUser)
 }

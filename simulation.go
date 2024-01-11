@@ -29,7 +29,7 @@ func registerUser(w http.ResponseWriter) *Sign {
 func win(w http.ResponseWriter, user *Sign) {
 	user.Score += 3
 
-	redisSetJustData(w, user.ID, user)
+	redisSetJustData(w, user)
 	redisSetLeaderBoard(user)
 
 }
@@ -38,10 +38,10 @@ func draw(w http.ResponseWriter, user1 *Sign, user2 *Sign) {
 	user1.Score += 1
 	user2.Score += 1
 
-	redisSetJustData(w, user1.ID, user1)
+	redisSetJustData(w, user1)
 	redisSetLeaderBoard(user1)
 
-	redisSetJustData(w, user2.ID, user2)
+	redisSetJustData(w, user2)
 	redisSetLeaderBoard(user2)
 }
 
@@ -85,7 +85,7 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 		hashPwd := md5Encode(ru.Password)
 		ru.Password = hashPwd
 
-		redisSetDataAndID(w, ru.UserName, ru.ID, ru)
+		redisSetDataAndID(w, ru)
 	}
 	autoMatch(w, users)
 }
