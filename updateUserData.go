@@ -63,9 +63,8 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 		userData.SurName = updateNewUserData.SurName
 		updatedUser.SurName = updateNewUserData.SurName
 	}
-	jsonResponse := jsonConvert(w, userData)
 	intID, _ := strconv.Atoi(idUrl)
-	redisSetJustData(intID, jsonResponse)
+	redisSetJustData(w, intID, userData)
 
 	responseSuccess(w, updatedUser)
 }

@@ -91,23 +91,34 @@ func responseError(w http.ResponseWriter, input string) {
 	w.Write(response)
 }
 
-func redisSetJustData(id int, data interface{}) {
+func redisSetJustData(w http.ResponseWriter, id int, data interface{}) {
+	jsonData := jsonConvert(w, data)
 	strID := strconv.Itoa(id)
-	_, er := rc.Set(context.Background(), "player_"+strID, data, 0).Result()
+	_, er := rc.Set(context.Background(), "player_"+strID, jsonData, 0).Result()
 	if er != nil {
 		log.Fatal("Set User data err: ", er)
 	}
 }
 
 func redisSetJustID(username string, id int) {
-
 	_, er := rc.Set(context.Background(), "userID:"+username, id, 0).Result()
 	if er != nil {
 		log.Fatal("Set User ID err: ", er)
 	}
 }
 
-func redisSetDataAndID(username string, id int, data interface{}) {
-	redisSetJustData(id, data)
+func redisSetDataAndID(w http.ResponseWriter, username string, id int, data interface{}) {
+	jsonData := jsonConvert(w, data)
+	redisSetJustData(w, id, jsonData)
 	redisSetJustID(username, id)
+}
+
+func redisZSet(score int, ID int) {
+
+	z := &redis.Z{
+		Score:  float64(score),
+		Member: ID,
+	}
+
+	rc.ZAdd(context.Background(), "leaderboard", *z).Result()
 }

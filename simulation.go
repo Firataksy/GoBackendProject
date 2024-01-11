@@ -1,13 +1,10 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"math/rand"
 	"net/http"
 	"strconv"
-
-	"github.com/redis/go-redis/v9"
 )
 
 func registerUser(w http.ResponseWriter) *Sign {
@@ -31,40 +28,21 @@ func registerUser(w http.ResponseWriter) *Sign {
 
 func win(w http.ResponseWriter, user *Sign) {
 	user.Score += 3
-	users := jsonConvert(w, user)
-	redisSetJustData(user.ID, users)
 
-	z := &redis.Z{
-		Score:  float64(user.Score),
-		Member: user.ID,
-	}
+	redisSetJustData(w, user.ID, user)
+	redisZSet(user.Score, user.ID)
 
-	rc.ZAdd(context.Background(), "leaderboard", *z).Result()
 }
 
 func draw(w http.ResponseWriter, user1 *Sign, user2 *Sign) {
 	user1.Score += 1
 	user2.Score += 1
 
-	users1 := jsonConvert(w, user1)
-	redisSetJustData(user1.ID, users1)
+	redisSetJustData(w, user1.ID, user1)
+	redisZSet(user1.Score, user1.ID)
 
-	z := &redis.Z{
-		Score:  float64(user1.Score),
-		Member: user1.ID,
-	}
-
-	rc.ZAdd(context.Background(), "leaderboard", *z).Result()
-
-	users2 := jsonConvert(w, user2)
-	redisSetJustData(user2.ID, users2)
-
-	rz := &redis.Z{
-		Score:  float64(user2.Score),
-		Member: user2.ID,
-	}
-
-	rc.ZAdd(context.Background(), "leaderboard", *rz).Result()
+	redisSetJustData(w, user2.ID, user2)
+	redisZSet(user2.Score, user2.ID)
 }
 
 func autoMatch(w http.ResponseWriter, users []*Sign) {
@@ -106,9 +84,8 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 		users[i] = ru
 		hashPwd := md5Encode(ru.Password)
 		ru.Password = hashPwd
-		ruJson := jsonConvert(w, ru)
 
-		redisSetDataAndID(ru.UserName, ru.ID, ruJson)
+		redisSetDataAndID(w, ru.UserName, ru.ID, ru)
 	}
 	autoMatch(w, users)
 }
