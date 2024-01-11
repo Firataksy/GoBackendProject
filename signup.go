@@ -7,7 +7,7 @@ import (
 )
 
 func signUp(w http.ResponseWriter, r *http.Request) {
-	var userSignUp Sign
+	var userSignUp *Sign
 	var user User
 
 	err := json.NewDecoder(r.Body).Decode(&userSignUp)
@@ -35,7 +35,7 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 
 		userSignUp.ID = int(id)
 
-		redisSetJustData(w, &userSignUp)
+		redisSetJustData(w, userSignUp)
 		redisSetJustID(userSignUp.UserName, int(id))
 
 		responseSuccess(w, sm)

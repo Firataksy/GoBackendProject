@@ -8,7 +8,6 @@ import (
 )
 
 func listLeaderBoard(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	var leaderBoard LeaderBoard
 	var userData UserLeaderBoard
 

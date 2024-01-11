@@ -33,30 +33,19 @@ func match(w http.ResponseWriter, r *http.Request) {
 
 	if match.Score1 > match.Score2 {
 		json.Unmarshal([]byte(checkUser1), &user)
-		user.Score += 3
-		redisSetJustData(w, user)
-		redisSetLeaderBoard(user)
-		responseSuccess(w, "")
+		win(w, user)
 	}
 
 	if match.Score1 < match.Score2 {
 		json.Unmarshal([]byte(checkUser2), &user)
-		user.Score += 3
-		redisSetJustData(w, user)
-		redisSetLeaderBoard(user)
-		responseSuccess(w, "")
+		win(w, user)
 	}
 
 	if match.Score1 == match.Score2 {
 		json.Unmarshal([]byte(checkUser1), &user)
-		user.Score += 1
-		redisSetJustData(w, user)
-		redisSetLeaderBoard(user)
 
 		json.Unmarshal([]byte(checkUser2), &user)
-		user.Score += 1
-		redisSetJustData(w, user)
-		redisSetLeaderBoard(user)
-		responseSuccess(w, "")
+
+		draw(w, user, user)
 	}
 }

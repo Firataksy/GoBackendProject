@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -18,11 +19,8 @@ func registerUser(w http.ResponseWriter) *Sign {
 		Name:     RandStringRunes(5),
 		SurName:  RandStringRunes(6),
 	}
-	sm := SuccessMessage{
-		ID:       sn.ID,
-		UserName: sn.UserName,
-	}
-	responseSuccess(w, sm)
+	hashPwd := md5Encode(sn.Password)
+	sn.Password = hashPwd
 	return sn
 }
 
@@ -58,34 +56,35 @@ func autoMatch(w http.ResponseWriter, users []*Sign) {
 			match.Score2 = rand.Intn(5)
 			if match.Score1 > match.Score2 {
 				win(w, user1)
+				fmt.Println("user1win = ", user1.ID, " ", user2.ID)
 			}
 			if match.Score1 < match.Score2 {
 				win(w, user2)
+				fmt.Println("user2win = ", user2.ID, " ", user1.ID)
 			}
 			if match.Score1 == match.Score2 {
 				draw(w, user1, user2)
+				fmt.Println("draw = ", user1.ID, " ", user2.ID)
 			}
 		}
 	}
 }
 
 func simulation(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	var sim Simulation
+
 	err := json.NewDecoder(r.Body).Decode(&sim)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
 	users := make([]*Sign, sim.Count)
-	for i := 0; i < sim.Count; i++ {
+
+	for i := 0; i < len(users); i++ {
 		ru := registerUser(w)
 		users[i] = ru
-		hashPwd := md5Encode(ru.Password)
-		ru.Password = hashPwd
-
 		redisSetDataAndID(w, ru)
 	}
+
 	autoMatch(w, users)
 }
