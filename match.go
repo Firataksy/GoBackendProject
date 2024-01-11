@@ -10,8 +10,7 @@ import (
 
 func match(w http.ResponseWriter, r *http.Request) {
 	var match Match
-	var user1 User1
-	var user2 User2
+	var user *Sign
 
 	er := json.NewDecoder(r.Body).Decode(&match)
 	if er != nil {
@@ -33,31 +32,31 @@ func match(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if match.Score1 > match.Score2 {
-		json.Unmarshal([]byte(checkUser1), &user1)
-		user1.Score += 3
-		redisSetJustData(w, match.UserID1, user1)
-		redisZSet(user1.Score, user1.ID)
+		json.Unmarshal([]byte(checkUser1), &user)
+		user.Score += 3
+		redisSetJustData(w, match.UserID1, user)
+		redisSetLeaderBoard(user)
 		responseSuccess(w, "")
 	}
 
 	if match.Score1 < match.Score2 {
-		json.Unmarshal([]byte(checkUser2), &user2)
-		user2.Score += 3
-		redisSetJustData(w, match.UserID2, user2)
-		redisZSet(user2.Score, user2.ID)
+		json.Unmarshal([]byte(checkUser2), &user)
+		user.Score += 3
+		redisSetJustData(w, match.UserID2, user)
+		redisSetLeaderBoard(user)
 		responseSuccess(w, "")
 	}
 
 	if match.Score1 == match.Score2 {
-		json.Unmarshal([]byte(checkUser1), &user1)
-		user1.Score += 1
-		redisSetJustData(w, match.UserID1, user1)
-		redisZSet(user1.Score, user1.ID)
+		json.Unmarshal([]byte(checkUser1), &user)
+		user.Score += 1
+		redisSetJustData(w, match.UserID1, user)
+		redisSetLeaderBoard(user)
 
-		json.Unmarshal([]byte(checkUser2), &user2)
-		user2.Score += 1
-		redisSetJustData(w, match.UserID2, user2)
-		redisZSet(user2.Score, user2.ID)
+		json.Unmarshal([]byte(checkUser2), &user)
+		user.Score += 1
+		redisSetJustData(w, match.UserID2, user)
+		redisSetLeaderBoard(user)
 		responseSuccess(w, "")
 	}
 }

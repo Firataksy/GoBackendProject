@@ -30,7 +30,7 @@ func win(w http.ResponseWriter, user *Sign) {
 	user.Score += 3
 
 	redisSetJustData(w, user.ID, user)
-	redisZSet(user.Score, user.ID)
+	redisSetLeaderBoard(user)
 
 }
 
@@ -39,10 +39,10 @@ func draw(w http.ResponseWriter, user1 *Sign, user2 *Sign) {
 	user2.Score += 1
 
 	redisSetJustData(w, user1.ID, user1)
-	redisZSet(user1.Score, user1.ID)
+	redisSetLeaderBoard(user1)
 
 	redisSetJustData(w, user2.ID, user2)
-	redisZSet(user2.Score, user2.ID)
+	redisSetLeaderBoard(user2)
 }
 
 func autoMatch(w http.ResponseWriter, users []*Sign) {

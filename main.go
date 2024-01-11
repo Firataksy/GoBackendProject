@@ -113,11 +113,11 @@ func redisSetDataAndID(w http.ResponseWriter, username string, id int, data inte
 	redisSetJustID(username, id)
 }
 
-func redisZSet(score int, ID int) {
+func redisSetLeaderBoard(user *Sign) {
 
 	z := &redis.Z{
-		Score:  float64(score),
-		Member: ID,
+		Score:  float64(user.Score),
+		Member: user.ID,
 	}
 
 	rc.ZAdd(context.Background(), "leaderboard", *z).Result()

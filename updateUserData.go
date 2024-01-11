@@ -9,7 +9,7 @@ import (
 )
 
 func updateUserData(w http.ResponseWriter, r *http.Request) {
-	var userData UserData
+	var userData User
 	var updatedUser UpdatedUser
 	var updateNewUserData UpdateNewUserData
 
@@ -53,7 +53,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	}
 	if updateNewUserData.Password != "" {
 		hashPWD := md5Encode(updateNewUserData.Password)
-		userData.Password = hashPWD
+		userData.Pwd = hashPWD
 	}
 	if updateNewUserData.Name != "" {
 		userData.Name = updateNewUserData.Name

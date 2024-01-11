@@ -61,38 +61,11 @@ type UpdateNewUserData struct {
 	SurName  string `json:"surname"`
 }
 
-type UserData struct {
-	ID       int    `json:"id"`
-	UserName string `json:"username"`
-	Password string `json:"password"`
-	Name     string `json:"name"`
-	SurName  string `json:"surname"`
-	Score    int    `json:"score"`
-}
-
 type Match struct {
 	UserID1 int `json:"userid1"`
 	UserID2 int `json:"userid2"`
 	Score1  int `json:"score1"`
 	Score2  int `json:"score2"`
-}
-
-type User1 struct {
-	ID       int    `json:"id"`
-	UserName string `json:"username"`
-	Pwd      string `json:"password"`
-	Name     string `json:"name"`
-	SurName  string `json:"surname"`
-	Score    int    `json:"score"`
-}
-
-type User2 struct {
-	ID       int    `json:"id"`
-	UserName string `json:"username"`
-	Pwd      string `json:"password"`
-	Name     string `json:"name"`
-	SurName  string `json:"surname"`
-	Score    int    `json:"score"`
 }
 
 type LeaderBoard struct {
