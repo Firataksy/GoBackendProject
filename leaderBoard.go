@@ -14,7 +14,7 @@ func listLeaderBoard(w http.ResponseWriter, r *http.Request) {
 
 	er := json.NewDecoder(r.Body).Decode(&leaderBoard)
 	if er != nil {
-		log.Fatal("ERR", er)
+		http.Error(w, er.Error(), http.StatusBadRequest)
 		return
 	}
 	if leaderBoard.Count < 0 || leaderBoard.Page < 0 {
