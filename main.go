@@ -33,9 +33,7 @@ var rc *redis.Client
 
 func redisConnect() *redis.Client {
 	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
+		Addr: "localhost:6379",
 	})
 	return client
 }
@@ -118,4 +116,10 @@ func redisSetLeaderBoard(user *Sign) {
 	}
 
 	rc.ZAdd(context.Background(), "leaderboard", *z).Result()
+}
+
+func redisGetAllData() {
+	keys := rc.Keys(context.Background(), "player_*")
+
+	fmt.Println("keys:", keys)
 }

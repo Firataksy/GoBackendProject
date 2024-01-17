@@ -2,13 +2,12 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"math/rand"
 	"net/http"
 	"strconv"
 )
 
-func registerUser(w http.ResponseWriter) *Sign {
+func registerUser() *Sign {
 
 	id := idCreate()
 	strID := strconv.Itoa(int(id))
@@ -56,15 +55,15 @@ func autoMatch(w http.ResponseWriter, users []*Sign) {
 			match.Score2 = rand.Intn(5)
 			if match.Score1 > match.Score2 {
 				win(w, user1)
-				fmt.Println("user1win = ", user1.ID, " ", user2.ID)
+				//fmt.Println("user1win = ", user1, " ", user2)
 			}
 			if match.Score1 < match.Score2 {
 				win(w, user2)
-				fmt.Println("user2win = ", user2.ID, " ", user1.ID)
+				//fmt.Println("user2win = ", user2.ID, " ", user1.ID)
 			}
 			if match.Score1 == match.Score2 {
 				draw(w, user1, user2)
-				fmt.Println("draw = ", user1.ID, " ", user2.ID)
+				//fmt.Println("draw = ", user1.ID, " ", user2.ID)
 			}
 		}
 	}
@@ -72,19 +71,20 @@ func autoMatch(w http.ResponseWriter, users []*Sign) {
 
 func simulation(w http.ResponseWriter, r *http.Request) {
 	var sim Simulation
-
 	err := json.NewDecoder(r.Body).Decode(&sim)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
 	users := make([]*Sign, sim.Count)
-
 	for i := 0; i < len(users); i++ {
-		ru := registerUser(w)
-		users[i] = ru
+		ru := registerUser()
 		redisSetDataAndID(w, ru)
-	}
 
+		users[i] = ru
+
+	}
+	redisGetAllData()
 	autoMatch(w, users)
 }

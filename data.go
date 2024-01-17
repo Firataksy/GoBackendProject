@@ -82,3 +82,7 @@ type UserLeaderBoard struct {
 type Simulation struct {
 	Count int `json:"count"`
 }
+
+type Keys struct {
+	Key interface{}
+}
