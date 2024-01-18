@@ -45,24 +45,27 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	if updateNewUserData.UserName != "" {
 		_, userRenameErr := rc.Rename(context.Background(), userData.UserName, updateNewUserData.UserName).Result()
 		if userRenameErr != nil {
-			log.Fatal("Not Renamed Username", userRenameErr)
+			log.Fatal("Redis Not Renamed Username", userRenameErr)
 		}
 		userData.UserName = updateNewUserData.UserName
 		updatedUser.UserName = updateNewUserData.UserName
 	}
+
 	if updateNewUserData.Password != "" {
 		hashPWD := md5Encode(updateNewUserData.Password)
 		userData.Password = hashPWD
 	}
+
 	if updateNewUserData.Name != "" {
 		userData.Name = updateNewUserData.Name
 		updatedUser.Name = updateNewUserData.Name
 	}
+
 	if updateNewUserData.SurName != "" {
 		userData.SurName = updateNewUserData.SurName
 		updatedUser.SurName = updateNewUserData.SurName
 	}
 	redisSetJustData(w, userData)
-
+	w.Header().Add("Token", userData.Token)
 	responseSuccess(w, updatedUser)
 }

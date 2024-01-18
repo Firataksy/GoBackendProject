@@ -1,6 +1,7 @@
 package main
 
 type Sign struct {
+	Token    string `json:"token"`
 	ID       int    `json:"id"`
 	UserName string `json:"username"`
 	Password string `json:"password"`
@@ -81,4 +82,8 @@ type UserLeaderBoard struct {
 
 type Simulation struct {
 	Count int `json:"count"`
+}
+
+type Keys struct {
+	Key interface{}
 }

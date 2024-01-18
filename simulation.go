@@ -8,11 +8,12 @@ import (
 	"strconv"
 )
 
-func registerUser(w http.ResponseWriter) *Sign {
-
+func registerUser() *Sign {
+	token := generateToken()
 	id := idCreate()
 	strID := strconv.Itoa(int(id))
 	sn := &Sign{
+		Token:    token,
 		ID:       int(id),
 		UserName: "player_" + strID,
 		Password: "12345",
@@ -21,6 +22,7 @@ func registerUser(w http.ResponseWriter) *Sign {
 	}
 	hashPwd := md5Encode(sn.Password)
 	sn.Password = hashPwd
+	redisSetToken(sn)
 	return sn
 }
 
@@ -72,19 +74,25 @@ func autoMatch(w http.ResponseWriter, users []*Sign) {
 
 func simulation(w http.ResponseWriter, r *http.Request) {
 	var sim Simulation
-
+	r.Header.Set("Token", "token")
 	err := json.NewDecoder(r.Body).Decode(&sim)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	users := make([]*Sign, sim.Count)
 
+	users := make([]*Sign, sim.Count)
 	for i := 0; i < len(users); i++ {
-		ru := registerUser(w)
-		users[i] = ru
+		ru := registerUser()
 		redisSetDataAndID(w, ru)
+		// data := redisGetAllLeaderBoardData()
+		// fmt.Println("data:", data)
+		users[i] = ru
+		// if data != nil {
+		// 	users = data
+		// }
 	}
 
 	autoMatch(w, users)
+
 }
