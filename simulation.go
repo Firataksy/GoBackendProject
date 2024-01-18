@@ -2,16 +2,18 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"strconv"
 )
 
 func registerUser() *Sign {
-
+	token := generateToken()
 	id := idCreate()
 	strID := strconv.Itoa(int(id))
 	sn := &Sign{
+		Token:    token,
 		ID:       int(id),
 		UserName: "player_" + strID,
 		Password: "12345",
@@ -20,6 +22,7 @@ func registerUser() *Sign {
 	}
 	hashPwd := md5Encode(sn.Password)
 	sn.Password = hashPwd
+	redisSetToken(sn)
 	return sn
 }
 
@@ -55,15 +58,15 @@ func autoMatch(w http.ResponseWriter, users []*Sign) {
 			match.Score2 = rand.Intn(5)
 			if match.Score1 > match.Score2 {
 				win(w, user1)
-				//fmt.Println("user1win = ", user1, " ", user2)
+				fmt.Println("user1win = ", user1.ID, " ", user2.ID)
 			}
 			if match.Score1 < match.Score2 {
 				win(w, user2)
-				//fmt.Println("user2win = ", user2.ID, " ", user1.ID)
+				fmt.Println("user2win = ", user2.ID, " ", user1.ID)
 			}
 			if match.Score1 == match.Score2 {
 				draw(w, user1, user2)
-				//fmt.Println("draw = ", user1.ID, " ", user2.ID)
+				fmt.Println("draw = ", user1.ID, " ", user2.ID)
 			}
 		}
 	}
@@ -71,6 +74,7 @@ func autoMatch(w http.ResponseWriter, users []*Sign) {
 
 func simulation(w http.ResponseWriter, r *http.Request) {
 	var sim Simulation
+	r.Header.Set("Token", "token")
 	err := json.NewDecoder(r.Body).Decode(&sim)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -81,10 +85,14 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < len(users); i++ {
 		ru := registerUser()
 		redisSetDataAndID(w, ru)
-
+		// data := redisGetAllLeaderBoardData()
+		// fmt.Println("data:", data)
 		users[i] = ru
-
+		// if data != nil {
+		// 	users = data
+		// }
 	}
-	redisGetAllData()
+
 	autoMatch(w, users)
+
 }

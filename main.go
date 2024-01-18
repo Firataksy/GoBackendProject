@@ -118,8 +118,40 @@ func redisSetLeaderBoard(user *Sign) {
 	rc.ZAdd(context.Background(), "leaderboard", *z).Result()
 }
 
-func redisGetAllData() {
-	keys := rc.Keys(context.Background(), "player_*")
+// func redisGetAllLeaderBoardData() []Sign {
+// 	var user User
+// 	allDataList, err := rc.ZRevRangeWithScores(context.Background(), "leaderboard", 0, -1).Result()
+// 	if err != nil {
+// 		log.Fatal("ERR list leaderboard", err)
+// 		return nil
+// 	}
 
-	fmt.Println("keys:", keys)
+// 	leaderBoardSlice := make([]Sign, len(allDataList))
+// 	for i, data := range allDataList {
+// 		s, _ := rc.Get(context.Background(), "player_"+data.Member.(string)).Result()
+// 		err := json.Unmarshal([]byte(s), &user)
+// 		if err != nil {
+// 			log.Fatal("Unmarshal err:", err)
+// 		}
+
+// 		leaderBoardSlice[i] = Sign{
+// 			ID:       user.ID,
+// 			Score:    user.Score,
+// 			UserName: user.UserName,
+// 		}
+// 	}
+// 	return leaderBoardSlice
+// }
+
+func generateToken() string {
+	token := make([]byte, 8)
+	rand.Read(token)
+	return fmt.Sprintf("%x", token)
+}
+
+func redisSetToken(sign *Sign) {
+	_, err := rc.Set(context.Background(), "token:"+sign.Token, sign.ID, 0).Result()
+	if err != nil {
+		log.Fatal("Redis Set Token err:", err)
+	}
 }
