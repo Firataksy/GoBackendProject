@@ -7,7 +7,6 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -17,10 +16,10 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/signup", signUp)
 	mux.HandleFunc("/login", login)
-	mux.Handle("/data", tokenMiddleware(http.HandlerFunc(getUserData)))
+	mux.Handle("/userinfo", tokenMiddleware(http.HandlerFunc(getUserData)))
 	mux.Handle("/updateuser", tokenMiddleware(http.HandlerFunc(updateUserData)))
 	mux.HandleFunc("/match", match)
-	mux.HandleFunc("/leaderboard", listLeaderBoard)
+	mux.Handle("/leaderboard", tokenMiddleware(http.HandlerFunc(listLeaderBoard)))
 	mux.HandleFunc("/simulation", simulation)
 	fmt.Println("http listen started")
 	err := http.ListenAndServe(":9000", mux)
@@ -88,25 +87,31 @@ func responseError(w http.ResponseWriter, input string) {
 	w.Write(response)
 }
 
-func redisSetJustData(w http.ResponseWriter, data *Sign) {
+func redisSetJustData(w http.ResponseWriter, data *Sign, username string) {
 	jsonData := jsonConvert(w, data)
-	strID := strconv.Itoa(data.ID)
-	_, er := rc.Set(context.Background(), "player_"+strID, jsonData, 0).Result()
+	_, er := rc.Set(context.Background(), username, jsonData, 0).Result()
 	if er != nil {
 		log.Fatal("Set User data err: ", er)
 	}
 }
 
-func redisSetJustID(username string, id int) {
+func redisSetJustID(w http.ResponseWriter, username string, id int) {
+	strID := jsonConvert(w, id)
 	_, er := rc.Set(context.Background(), "userID:"+username, id, 0).Result()
 	if er != nil {
 		log.Fatal("Set User ID err: ", er)
 	}
+
+	_, err := rc.Set(context.Background(), "user:"+string(strID), username, 0).Result()
+	if err != nil {
+		log.Fatal("Set User ID err: ", er)
+	}
+
 }
 
-func redisSetDataAndID(w http.ResponseWriter, data *Sign) {
-	redisSetJustData(w, data)
-	redisSetJustID(data.UserName, data.ID)
+func redisSetDataAndID(w http.ResponseWriter, data *Sign, username string) {
+	redisSetJustData(w, data, username)
+	redisSetJustID(w, data.UserName, data.ID)
 }
 
 func redisSetLeaderBoard(user *Sign) {
@@ -160,8 +165,7 @@ func redisSetToken(sign *Sign) {
 func tokenToID(w http.ResponseWriter, token string) string {
 	id, err := rc.Get(context.Background(), "token:"+token).Result()
 	if err != nil {
-		responseError(w, "Invalid token")
-		return ""
+		responseError(w, "Invalid Token")
 	}
 	return id
 }
@@ -171,8 +175,15 @@ func tokenMiddleware(next http.Handler) http.Handler {
 		token := r.Header.Get("token")
 		if token == "" {
 			responseError(w, "Token cannot be empty")
+			return
 		}
 
+		idToken := tokenToID(w, token)
+		if idToken == "" {
+			return
+		}
+
+		r.Header.Set("userID", idToken)
 		next.ServeHTTP(w, r)
 	})
 }

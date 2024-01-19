@@ -36,8 +36,10 @@ func listLeaderBoard(w http.ResponseWriter, r *http.Request) {
 
 	leaderBoardSlice := make([]UserLeaderBoard, len(leaderBoardList))
 	for i, data := range leaderBoardList {
-		s, _ := rc.Get(context.Background(), "player_"+data.Member.(string)).Result()
-		err := json.Unmarshal([]byte(s), &userData)
+		s, _ := rc.Get(context.Background(), "user:"+data.Member.(string)).Result()
+		data, _ := rc.Get(context.Background(), s).Result()
+
+		err := json.Unmarshal([]byte(data), &userData)
 		if err != nil {
 			log.Fatal("Unmarshal err:", err)
 		}

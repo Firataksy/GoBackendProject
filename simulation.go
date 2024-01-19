@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -29,7 +28,7 @@ func registerUser() *Sign {
 func win(w http.ResponseWriter, user *Sign) {
 	user.Score += 3
 
-	redisSetJustData(w, user)
+	redisSetJustData(w, user, user.UserName)
 	redisSetLeaderBoard(user)
 
 }
@@ -38,10 +37,10 @@ func draw(w http.ResponseWriter, user1 *Sign, user2 *Sign) {
 	user1.Score += 1
 	user2.Score += 1
 
-	redisSetJustData(w, user1)
+	redisSetJustData(w, user1, user1.UserName)
 	redisSetLeaderBoard(user1)
 
-	redisSetJustData(w, user2)
+	redisSetJustData(w, user2, user2.UserName)
 	redisSetLeaderBoard(user2)
 }
 
@@ -58,15 +57,12 @@ func autoMatch(w http.ResponseWriter, users []*Sign) {
 			match.Score2 = rand.Intn(5)
 			if match.Score1 > match.Score2 {
 				win(w, user1)
-				fmt.Println("user1win = ", user1.ID, " ", user2.ID)
 			}
 			if match.Score1 < match.Score2 {
 				win(w, user2)
-				fmt.Println("user2win = ", user2.ID, " ", user1.ID)
 			}
 			if match.Score1 == match.Score2 {
 				draw(w, user1, user2)
-				fmt.Println("draw = ", user1.ID, " ", user2.ID)
 			}
 		}
 	}
@@ -83,7 +79,7 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 	users := make([]*Sign, sim.Count)
 	for i := 0; i < len(users); i++ {
 		ru := registerUser()
-		redisSetDataAndID(w, ru)
+		redisSetDataAndID(w, ru, ru.UserName)
 		// data := redisGetAllLeaderBoardData()
 		// fmt.Println("data:", data)
 		users[i] = ru
@@ -92,6 +88,7 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 		// }
 	}
 
+	responseSuccess(w, "")
 	autoMatch(w, users)
 
 }

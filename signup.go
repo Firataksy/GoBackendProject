@@ -32,16 +32,15 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 
 		token := generateToken()
 		userSignUp.Token = token
-		w.Header().Add("token", token)
 		redisSetToken(userSignUp)
 
 		sm := SuccessMessage{
-			ID:       int(id),
+			Token:    userSignUp.Token,
 			UserName: userSignUp.UserName,
 		}
 
-		redisSetJustData(w, userSignUp)
-		redisSetJustID(userSignUp.UserName, int(id))
+		redisSetJustData(w, userSignUp, userSignUp.UserName)
+		redisSetJustID(w, userSignUp.UserName, int(id))
 
 		responseSuccess(w, sm)
 		return

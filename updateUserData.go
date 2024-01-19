@@ -12,17 +12,15 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	var updatedUser UpdatedUser
 	var updateNewUserData UpdateNewUserData
 
-	token := r.Header.Get("token")
-
-	id := tokenToID(w, token)
-
+	userid := r.Header.Get("userid")
 	er := json.NewDecoder(r.Body).Decode(&updateNewUserData)
 	if er != nil {
 		http.Error(w, er.Error(), http.StatusBadRequest)
 		return
 	}
 
-	checkUser, _ := rc.Get(context.Background(), "player_"+id).Result()
+	check, _ := rc.Get(context.Background(), "user:"+userid).Result()
+	checkUser, _ := rc.Get(context.Background(), check).Result()
 
 	if checkUser == "" {
 		responseError(w, "User not found")
@@ -67,7 +65,6 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 		userData.SurName = updateNewUserData.SurName
 		updatedUser.SurName = updateNewUserData.SurName
 	}
-	redisSetJustData(w, userData)
-	w.Header().Add("Token", userData.Token)
+	redisSetDataAndID(w, userData, userData.UserName)
 	responseSuccess(w, updatedUser)
 }

@@ -9,18 +9,17 @@ import (
 
 func getUserData(w http.ResponseWriter, r *http.Request) {
 	var user User
-	token := r.Header.Get("token")
-	idToken := tokenToID(w, token)
-	if idToken == "" {
+	userID := r.Header.Get("userid")
+	if userID == "" {
 		return
 	}
 
-	idInt, _ := strconv.Atoi(idToken)
+	idInt, _ := strconv.Atoi(userID)
 
-	val, _ := rc.Get(context.Background(), "player_"+idToken).Result()
+	idUserName, _ := rc.Get(context.Background(), "user:"+userID).Result()
+	val, _ := rc.Get(context.Background(), idUserName).Result()
 
 	json.Unmarshal([]byte(val), &user)
-
 	if user.ID == idInt && idInt != 0 {
 
 		sd := SuccessData{
