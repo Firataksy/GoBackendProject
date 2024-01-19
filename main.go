@@ -145,7 +145,7 @@ func redisSetLeaderBoard(user *Sign) {
 // }
 
 func generateToken() string {
-	token := make([]byte, 16)
+	token := make([]byte, 8)
 	rand.Read(token)
 	return fmt.Sprintf("%x", token)
 }
