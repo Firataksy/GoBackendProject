@@ -17,8 +17,8 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/signup", signUp)
 	mux.HandleFunc("/login", login)
-	mux.HandleFunc("/data", getUserData)
-	mux.HandleFunc("/updateuser", updateUserData)
+	mux.Handle("/data", tokenMiddleware(http.HandlerFunc(getUserData)))
+	mux.Handle("/updateuser", tokenMiddleware(http.HandlerFunc(updateUserData)))
 	mux.HandleFunc("/match", match)
 	mux.HandleFunc("/leaderboard", listLeaderBoard)
 	mux.HandleFunc("/simulation", simulation)
@@ -78,6 +78,7 @@ func responseSuccess(w http.ResponseWriter, input interface{}) {
 }
 
 func responseError(w http.ResponseWriter, input string) {
+	w.Header().Add("Content-Type", "application/json")
 	ms := &FailMessage{
 		Status:  false,
 		Message: input,
@@ -144,7 +145,7 @@ func redisSetLeaderBoard(user *Sign) {
 // }
 
 func generateToken() string {
-	token := make([]byte, 8)
+	token := make([]byte, 16)
 	rand.Read(token)
 	return fmt.Sprintf("%x", token)
 }
@@ -154,4 +155,24 @@ func redisSetToken(sign *Sign) {
 	if err != nil {
 		log.Fatal("Redis Set Token err:", err)
 	}
+}
+
+func tokenToID(w http.ResponseWriter, token string) string {
+	id, err := rc.Get(context.Background(), "token:"+token).Result()
+	if err != nil {
+		responseError(w, "Invalid token")
+		return ""
+	}
+	return id
+}
+
+func tokenMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token := r.Header.Get("token")
+		if token == "" {
+			responseError(w, "Token cannot be empty")
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }

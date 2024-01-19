@@ -12,7 +12,9 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	var updatedUser UpdatedUser
 	var updateNewUserData UpdateNewUserData
 
-	idUrl := r.URL.Query().Get("id")
+	token := r.Header.Get("token")
+
+	id := tokenToID(w, token)
 
 	er := json.NewDecoder(r.Body).Decode(&updateNewUserData)
 	if er != nil {
@@ -20,7 +22,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	checkUser, _ := rc.Get(context.Background(), "player_"+idUrl).Result()
+	checkUser, _ := rc.Get(context.Background(), "player_"+id).Result()
 
 	if checkUser == "" {
 		responseError(w, "User not found")

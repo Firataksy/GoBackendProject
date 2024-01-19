@@ -9,15 +9,15 @@ import (
 
 func getUserData(w http.ResponseWriter, r *http.Request) {
 	var user User
-
-	idURL := r.URL.Query().Get("id")
-	idInt, err := strconv.Atoi(idURL)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	token := r.Header.Get("token")
+	idToken := tokenToID(w, token)
+	if idToken == "" {
 		return
 	}
 
-	val, _ := rc.Get(context.Background(), "player_"+idURL).Result()
+	idInt, _ := strconv.Atoi(idToken)
+
+	val, _ := rc.Get(context.Background(), "player_"+idToken).Result()
 
 	json.Unmarshal([]byte(val), &user)
 

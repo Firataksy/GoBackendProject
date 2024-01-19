@@ -74,7 +74,6 @@ func autoMatch(w http.ResponseWriter, users []*Sign) {
 
 func simulation(w http.ResponseWriter, r *http.Request) {
 	var sim Simulation
-	r.Header.Set("Token", "token")
 	err := json.NewDecoder(r.Body).Decode(&sim)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

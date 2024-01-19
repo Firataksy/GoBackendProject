@@ -39,6 +39,7 @@ type Response struct {
 }
 
 type User struct {
+	Token    string `json:"token"`
 	ID       int    `json:"id"`
 	UserName string `json:"username"`
 	Pwd      string `json:"password"`

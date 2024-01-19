@@ -28,12 +28,17 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 
 		userSignUp.Password = md5Encode(userSignUp.Password)
 		id := idCreate()
+		userSignUp.ID = int(id)
+
+		token := generateToken()
+		userSignUp.Token = token
+		w.Header().Add("token", token)
+		redisSetToken(userSignUp)
+
 		sm := SuccessMessage{
 			ID:       int(id),
 			UserName: userSignUp.UserName,
 		}
-
-		userSignUp.ID = int(id)
 
 		redisSetJustData(w, userSignUp)
 		redisSetJustID(userSignUp.UserName, int(id))
