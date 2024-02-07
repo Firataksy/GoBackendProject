@@ -22,6 +22,7 @@ func main() {
 	mux.HandleFunc("/match", match)
 	mux.Handle("/leaderboard", tokenMiddleware(http.HandlerFunc(listLeaderBoard)))
 	mux.HandleFunc("/simulation", simulation)
+	mux.Handle("/usersearch", tokenMiddleware(http.HandlerFunc(userSearch)))
 	fmt.Println("http listen started")
 	err := http.ListenAndServe(":9000", mux)
 	if err != nil {
