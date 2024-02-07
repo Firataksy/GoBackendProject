@@ -89,9 +89,9 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	leaderBoardData := redisGetLeaderBoardData()
-	combinedUsers := append(users, leaderBoardData...)
+	allUsers := append(users, leaderBoardData...)
 
 	responseSuccess(w, "")
-	autoMatch(w, combinedUsers)
+	autoMatch(w, allUsers)
 
 }
