@@ -134,7 +134,7 @@ func redisGetLeaderBoardData() []*Sign {
 		return nil
 	}
 
-	sn := make([]*Sign, len(allDataList))
+	leaderBoardDataSlice := make([]*Sign, len(allDataList))
 	for i, data := range allDataList {
 		userData, _ := rc.Get(context.Background(), "player_"+data.Member.(string)).Result()
 		err := json.Unmarshal([]byte(userData), &user)
@@ -142,17 +142,13 @@ func redisGetLeaderBoardData() []*Sign {
 			log.Fatal("Unmarshal err:", err)
 		}
 
-		sn[i] = &Sign{
-			Token:    "",
+		leaderBoardDataSlice[i] = &Sign{
 			ID:       user.ID,
 			Score:    user.Score,
 			UserName: user.UserName,
-			Password: "",
-			Name:     "",
-			SurName:  "",
 		}
 	}
-	return sn
+	return leaderBoardDataSlice
 }
 
 func generateToken() string {
