@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -52,17 +54,21 @@ func autoMatch(w http.ResponseWriter, users []*Sign) {
 			user2 := users[j]
 			if i == j {
 				continue
-			}
-			match.Score1 = rand.Intn(5)
-			match.Score2 = rand.Intn(5)
-			if match.Score1 > match.Score2 {
-				win(w, user1)
-			}
-			if match.Score1 < match.Score2 {
-				win(w, user2)
-			}
-			if match.Score1 == match.Score2 {
-				draw(w, user1, user2)
+			} else {
+				match.Score1 = rand.Intn(5)
+				match.Score2 = rand.Intn(5)
+				if match.Score1 > match.Score2 {
+					win(w, user1)
+					fmt.Println("user1 win: ", user1.ID, user2.ID)
+				}
+				if match.Score1 < match.Score2 {
+					win(w, user2)
+					fmt.Println("user2 win: ", user1.ID, user2.ID)
+				}
+				if match.Score1 == match.Score2 {
+					draw(w, user1, user2)
+					fmt.Println("draw: ", user1.ID, user2.ID)
+				}
 			}
 		}
 	}
@@ -75,20 +81,17 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
 	users := make([]*Sign, sim.Count)
 	for i := 0; i < len(users); i++ {
 		ru := registerUser()
 		redisSetDataAndID(w, ru, ru.UserName)
-		// data := redisGetAllLeaderBoardData()
-		// fmt.Println("data:", data)
 		users[i] = ru
-		// if data != nil {
-		// 	users = data
-		// }
 	}
 
+	leaderBoardData := redisGetLeaderBoardData()
+	combinedUsers := append(users, leaderBoardData...)
+
 	responseSuccess(w, "")
-	autoMatch(w, users)
+	autoMatch(w, combinedUsers)
 
 }

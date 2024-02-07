@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"log"
 	"math/rand"
 	"net/http"
@@ -124,30 +125,34 @@ func redisSetLeaderBoard(user *Sign) {
 	rc.ZAdd(context.Background(), "leaderboard", *z).Result()
 }
 
-// func redisGetAllLeaderBoardData() []Sign {
-// 	var user User
-// 	allDataList, err := rc.ZRevRangeWithScores(context.Background(), "leaderboard", 0, -1).Result()
-// 	if err != nil {
-// 		log.Fatal("ERR list leaderboard", err)
-// 		return nil
-// 	}
+func redisGetLeaderBoardData() []*Sign {
+	var user User
+	allDataList, err := rc.ZRevRangeWithScores(context.Background(), "leaderboard", 0, -1).Result()
+	if err != nil {
+		log.Fatal("ERR list leaderboard", err)
+		return nil
+	}
 
-// 	leaderBoardSlice := make([]Sign, len(allDataList))
-// 	for i, data := range allDataList {
-// 		s, _ := rc.Get(context.Background(), "player_"+data.Member.(string)).Result()
-// 		err := json.Unmarshal([]byte(s), &user)
-// 		if err != nil {
-// 			log.Fatal("Unmarshal err:", err)
-// 		}
+	sn := make([]*Sign, len(allDataList))
+	for i, data := range allDataList {
+		userData, _ := rc.Get(context.Background(), "player_"+data.Member.(string)).Result()
+		err := json.Unmarshal([]byte(userData), &user)
+		if err != nil {
+			log.Fatal("Unmarshal err:", err)
+		}
 
-// 		leaderBoardSlice[i] = Sign{
-// 			ID:       user.ID,
-// 			Score:    user.Score,
-// 			UserName: user.UserName,
-// 		}
-// 	}
-// 	return leaderBoardSlice
-// }
+		sn[i] = &Sign{
+			Token:    "",
+			ID:       user.ID,
+			Score:    user.Score,
+			UserName: user.UserName,
+			Password: "",
+			Name:     "",
+			SurName:  "",
+		}
+	}
+	return sn
+}
 
 func generateToken() string {
 	token := make([]byte, 8)
@@ -162,14 +167,6 @@ func redisSetToken(sign *Sign) {
 	}
 }
 
-func tokenToID(w http.ResponseWriter, token string) string {
-	id, err := rc.Get(context.Background(), "token:"+token).Result()
-	if err != nil {
-		responseError(w, "Invalid Token")
-	}
-	return id
-}
-
 func tokenMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("token")
@@ -178,7 +175,11 @@ func tokenMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		idToken := tokenToID(w, token)
+		idToken, err := rc.Get(context.Background(), "token:"+token).Result()
+		if err != nil {
+			responseError(w, "Invalid Token")
+		}
+
 		if idToken == "" {
 			return
 		}
