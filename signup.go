@@ -39,7 +39,7 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 			UserName: userSignUp.UserName,
 		}
 
-		redisSetJustData(w, userSignUp, userSignUp.UserName)
+		redisSetJustData(w, userSignUp)
 		redisSetJustID(w, userSignUp.UserName, int(id))
 
 		responseSuccess(w, sm)

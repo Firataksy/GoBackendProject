@@ -65,6 +65,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 		userData.SurName = updateNewUserData.SurName
 		updatedUser.SurName = updateNewUserData.SurName
 	}
-	redisSetDataAndID(w, userData, userData.UserName)
+
+	redisSetDataAndID(w, userData)
 	responseSuccess(w, updatedUser)
 }
