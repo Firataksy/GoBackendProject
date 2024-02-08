@@ -170,7 +170,7 @@ func redisSetAllUser(w http.ResponseWriter, inputUserID int) {
 
 	_, err := rc.ZAdd(context.Background(), "users", *z).Result()
 	if err != nil {
-		fmt.Println("redis error usersID set err :== ", err)
+		log.Fatal("Redis Could Not Set User ID")
 	}
 }
 
@@ -183,9 +183,7 @@ func redisGetAllUser() []*Sign {
 	allUser := make([]*Sign, len(userID))
 	for i, ID := range userID {
 		s, _ := rc.Get(context.Background(), "user:"+ID).Result()
-		fmt.Println("username: ", s)
 		data, _ := rc.Get(context.Background(), s).Result()
-		fmt.Println("userdata: ", data)
 
 		err := json.Unmarshal([]byte(data), &users)
 		if err != nil {
