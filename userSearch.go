@@ -14,6 +14,11 @@ func userSearch(w http.ResponseWriter, r *http.Request) {
 
 	userID, _ := rc.Get(context.Background(), "userID:"+urlUserName).Result()
 
+	if urlUserName == "" {
+		responseError(w, "can not be empty username in url")
+		return
+	}
+
 	if userID == "" {
 		responseError(w, "user not found")
 		return
