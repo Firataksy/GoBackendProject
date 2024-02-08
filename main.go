@@ -89,9 +89,9 @@ func responseError(w http.ResponseWriter, input string) {
 	w.Write(response)
 }
 
-func redisSetJustData(w http.ResponseWriter, data *Sign, username string) {
+func redisSetJustData(w http.ResponseWriter, data *Sign) {
 	jsonData := jsonConvert(w, data)
-	_, er := rc.Set(context.Background(), username, jsonData, 0).Result()
+	_, er := rc.Set(context.Background(), data.UserName, jsonData, 0).Result()
 	if er != nil {
 		log.Fatal("Set User data err: ", er)
 	}
@@ -111,8 +111,8 @@ func redisSetJustID(w http.ResponseWriter, username string, id int) {
 
 }
 
-func redisSetDataAndID(w http.ResponseWriter, data *Sign, username string) {
-	redisSetJustData(w, data, username)
+func redisSetDataAndID(w http.ResponseWriter, data *Sign) {
+	redisSetJustData(w, data)
 	redisSetJustID(w, data.UserName, data.ID)
 }
 
@@ -124,31 +124,6 @@ func redisSetLeaderBoard(user *Sign) {
 	}
 
 	rc.ZAdd(context.Background(), "leaderboard", *z).Result()
-}
-
-func redisGetLeaderBoardData() []*Sign {
-	var user User
-	allDataList, err := rc.ZRevRangeWithScores(context.Background(), "leaderboard", 0, -1).Result()
-	if err != nil {
-		log.Fatal("ERR list leaderboard", err)
-		return nil
-	}
-
-	leaderBoardDataSlice := make([]*Sign, len(allDataList))
-	for i, data := range allDataList {
-		userData, _ := rc.Get(context.Background(), "player_"+data.Member.(string)).Result()
-		err := json.Unmarshal([]byte(userData), &user)
-		if err != nil {
-			log.Fatal("Unmarshal err:", err)
-		}
-
-		leaderBoardDataSlice[i] = &Sign{
-			ID:       user.ID,
-			Score:    user.Score,
-			UserName: user.UserName,
-		}
-	}
-	return leaderBoardDataSlice
 }
 
 func generateToken() string {
@@ -184,4 +159,42 @@ func tokenMiddleware(next http.Handler) http.Handler {
 		r.Header.Set("userID", idToken)
 		next.ServeHTTP(w, r)
 	})
+}
+
+func redisSetAllUser(w http.ResponseWriter, inputUserID int) {
+	userID := jsonConvert(w, inputUserID)
+
+	z := &redis.Z{
+		Member: userID,
+	}
+
+	_, err := rc.ZAdd(context.Background(), "users", *z).Result()
+	if err != nil {
+		fmt.Println("redis error usersID set err :== ", err)
+	}
+}
+
+func redisGetAllUser() []*Sign {
+	var users *Sign
+	userID, err := rc.ZRange(context.Background(), "users", 0, -1).Result()
+	if err != nil {
+		log.Fatal("Redis Could Not Get User ID", err)
+	}
+	allUser := make([]*Sign, len(userID))
+	for i, ID := range userID {
+		s, _ := rc.Get(context.Background(), "user:"+ID).Result()
+		fmt.Println("username: ", s)
+		data, _ := rc.Get(context.Background(), s).Result()
+		fmt.Println("userdata: ", data)
+
+		err := json.Unmarshal([]byte(data), &users)
+		if err != nil {
+			log.Fatal("Unmarshal err: ", err)
+		}
+		allUser[i] = &Sign{
+			ID: users.ID,
+		}
+	}
+
+	return allUser
 }

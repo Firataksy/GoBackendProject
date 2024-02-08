@@ -19,8 +19,9 @@ func registerUser() *Sign {
 		UserName: "player_" + strID,
 		Password: "12345",
 		Name:     RandStringRunes(5),
-		SurName:  RandStringRunes(6),
+		SurName:  RandStringRunes(5),
 	}
+
 	hashPwd := md5Encode(sn.Password)
 	sn.Password = hashPwd
 	redisSetToken(sn)
@@ -30,7 +31,7 @@ func registerUser() *Sign {
 func win(w http.ResponseWriter, user *Sign) {
 	user.Score += 3
 
-	redisSetJustData(w, user, user.UserName)
+	redisSetJustData(w, user)
 	redisSetLeaderBoard(user)
 
 }
@@ -39,10 +40,10 @@ func draw(w http.ResponseWriter, user1 *Sign, user2 *Sign) {
 	user1.Score += 1
 	user2.Score += 1
 
-	redisSetJustData(w, user1, user1.UserName)
+	redisSetJustData(w, user1)
 	redisSetLeaderBoard(user1)
 
-	redisSetJustData(w, user2, user2.UserName)
+	redisSetJustData(w, user2)
 	redisSetLeaderBoard(user2)
 }
 
@@ -81,17 +82,17 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
 	users := make([]*Sign, sim.Count)
 	for i := 0; i < len(users); i++ {
 		ru := registerUser()
-		redisSetDataAndID(w, ru, ru.UserName)
-		users[i] = ru
+		redisSetDataAndID(w, ru)
+		redisSetAllUser(w, ru.ID)
 	}
 
-	leaderBoardData := redisGetLeaderBoardData()
-	allUsers := append(users, leaderBoardData...)
-
+	redisData := redisGetAllUser()
+	allUsers := redisData
 	responseSuccess(w, "")
+	fmt.Println("all users: ", allUsers)
 	autoMatch(w, allUsers)
-
 }
