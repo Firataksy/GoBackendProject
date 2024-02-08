@@ -87,11 +87,13 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < len(users); i++ {
 		ru := registerUser()
 		redisSetDataAndID(w, ru)
+		users[i] = ru
 		redisSetAllUser(w, ru.ID)
 	}
 
 	redisData := redisGetAllUser()
 	allUsers := redisData
 	responseSuccess(w, "")
+	fmt.Println("all users: ", allUsers)
 	autoMatch(w, allUsers)
 }
