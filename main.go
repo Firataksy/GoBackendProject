@@ -181,6 +181,7 @@ func redisGetAllUser() []*Sign {
 		log.Fatal("Redis Could Not Get User ID", err)
 	}
 	allUser := make([]*Sign, len(userID))
+
 	for i, ID := range userID {
 		s, _ := rc.Get(context.Background(), "user:"+ID).Result()
 		data, _ := rc.Get(context.Background(), s).Result()
