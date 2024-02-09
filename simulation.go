@@ -45,10 +45,12 @@ func draw(w http.ResponseWriter, user1 *Sign, user2 *Sign) {
 
 	redisSetJustData(w, user2)
 	redisSetLeaderBoard(user2)
+
 }
 
 func autoMatch(w http.ResponseWriter, users []*Sign) {
 	var match Match
+
 	for i := 0; i < len(users); i++ {
 		user1 := users[i]
 		for j := i; j < len(users); j++ {
@@ -86,12 +88,20 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 	users := make([]*Sign, sim.Count)
 	for i := 0; i < len(users); i++ {
 		ru := registerUser()
+
+		users[i] = ru
+
 		redisSetDataAndID(w, ru)
-		redisSetAllUser(w, ru.ID)
+		sn := &Sign{
+			ID:    ru.ID,
+			Score: ru.Score,
+		}
+
+		defer redisSetAllUser(w, sn)
 	}
 
 	redisData := redisGetAllUser()
-	allUsers := redisData
+	allUsers := append(users, redisData...)
 	responseSuccess(w, "")
 	autoMatch(w, allUsers)
 }
