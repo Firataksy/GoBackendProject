@@ -171,7 +171,7 @@ func redisSetAllUser(w http.ResponseWriter, inputUser *Sign) {
 
 	_, err := rc.ZAdd(context.Background(), "users", *z).Result()
 	if err != nil {
-		log.Fatal("Redis Could Not Set User ID")
+		log.Fatal("Redis Could Not Set User ID", err)
 	}
 }
 
