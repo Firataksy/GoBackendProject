@@ -92,7 +92,12 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 		users[i] = ru
 
 		redisSetDataAndID(w, ru)
-		redisSetAllUser(w, ru.ID)
+		sn := &Sign{
+			ID:    ru.ID,
+			Score: ru.Score,
+		}
+
+		defer redisSetAllUser(w, sn)
 	}
 
 	redisData := redisGetAllUser()
