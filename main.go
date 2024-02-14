@@ -24,6 +24,7 @@ func main() {
 	mux.HandleFunc("/simulation", simulation)
 	mux.Handle("/usersearch", tokenMiddleware(http.HandlerFunc(userSearch)))
 	mux.Handle("/friendrequest", tokenMiddleware(http.HandlerFunc(friendRequest)))
+	mux.Handle("/friendrequestlist", tokenMiddleware(http.HandlerFunc(friendRequestList)))
 	fmt.Println("http listen started")
 	err := http.ListenAndServe(":9000", mux)
 	if err != nil {
@@ -152,6 +153,7 @@ func tokenMiddleware(next http.Handler) http.Handler {
 		idToken, err := rc.Get(context.Background(), "token:"+token).Result()
 		if err != nil {
 			responseError(w, "Invalid Token")
+			return
 		}
 
 		if idToken == "" {

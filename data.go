@@ -1,5 +1,7 @@
 package main
 
+import "time"
+
 type Sign struct {
 	Token    string `json:"token"`
 	ID       int    `json:"id"`
@@ -76,15 +78,17 @@ type LeaderBoard struct {
 }
 
 type UserLeaderBoard struct {
-	UserName interface{} `json:"username"`
-	UserID   int         `json:"id"`
-	Score    int         `json:"score"`
+	UserName string `json:"username"`
+	UserID   int    `json:"id"`
+	Score    int    `json:"score"`
 }
 
 type Simulation struct {
 	Count int `json:"count"`
 }
 
-type Keys struct {
-	Key interface{}
+type FriendRequestList struct {
+	ID       int       `json:"ID"`
+	UserName string    `json:"username"`
+	Date     time.Time `json:"date"`
 }
