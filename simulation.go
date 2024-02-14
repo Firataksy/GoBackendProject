@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"math/rand"
 	"net/http"
@@ -62,15 +61,12 @@ func autoMatch(w http.ResponseWriter, users []*Sign) {
 				match.Score2 = rand.Intn(5)
 				if match.Score1 > match.Score2 {
 					win(w, user1)
-					fmt.Println("user1 win: ", user1.ID, user2.ID)
 				}
 				if match.Score1 < match.Score2 {
 					win(w, user2)
-					fmt.Println("user2 win: ", user1.ID, user2.ID)
 				}
 				if match.Score1 == match.Score2 {
 					draw(w, user1, user2)
-					fmt.Println("draw: ", user1.ID, user2.ID)
 				}
 			}
 		}
@@ -92,12 +88,7 @@ func simulation(w http.ResponseWriter, r *http.Request) {
 		users[i] = ru
 
 		redisSetDataAndID(w, ru)
-		sn := &Sign{
-			ID:    ru.ID,
-			Score: ru.Score,
-		}
-
-		defer redisSetAllUser(w, sn)
+		defer redisSetLeaderBoard(ru)
 	}
 
 	redisData := redisGetAllUser()
