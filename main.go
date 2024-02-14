@@ -99,7 +99,7 @@ func redisSetJustData(w http.ResponseWriter, data *Sign) {
 	}
 }
 
-func redisSetJustID(w http.ResponseWriter, username string, id int) {
+func redisSetUserNameAndID(w http.ResponseWriter, username string, id int) {
 	strID := jsonConvert(w, id)
 	_, er := rc.Set(context.Background(), "userID:"+username, id, 0).Result()
 	if er != nil {
@@ -115,7 +115,7 @@ func redisSetJustID(w http.ResponseWriter, username string, id int) {
 
 func redisSetDataAndID(w http.ResponseWriter, data *Sign) {
 	redisSetJustData(w, data)
-	redisSetJustID(w, data.UserName, data.ID)
+	redisSetUserNameAndID(w, data.UserName, data.ID)
 }
 
 func redisSetLeaderBoard(user *Sign) {
@@ -163,40 +163,31 @@ func tokenMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func redisSetAllUser(w http.ResponseWriter, inputUser *Sign) {
-
-	z := &redis.Z{
-		Score:  float64(inputUser.Score),
-		Member: inputUser.ID,
-	}
-
-	_, err := rc.ZAdd(context.Background(), "users", *z).Result()
-	if err != nil {
-		log.Fatal("Redis Could Not Set User ID", err)
-	}
-}
-
 func redisGetAllUser() []*Sign {
-	var users *Sign
-	user, err := rc.ZRange(context.Background(), "users", 0, -1).Result()
+	var user *Sign
+
+	users, err := rc.ZRange(context.Background(), "leaderboard", 0, -1).Result()
 	if err != nil {
 		log.Fatal("Redis Could Not Get User ID", err)
 	}
-	allUser := make([]*Sign, len(user))
-	for i, data := range user {
+
+	allUser := make([]*Sign, len(users))
+	for i, data := range users {
 		userName, _ := rc.Get(context.Background(), "user:"+data).Result()
 		data, _ := rc.Get(context.Background(), userName).Result()
-		err := json.Unmarshal([]byte(data), &users)
+		err := json.Unmarshal([]byte(data), &user)
 		if err != nil {
 			log.Fatal("Unmarshal err: ", err)
 		}
+
 		allUser[i] = &Sign{
-			Token:    users.Token,
-			ID:       users.ID,
-			UserName: users.UserName,
-			Password: users.Password,
-			Name:     users.Name,
-			SurName:  users.SurName,
+			Token:    user.Token,
+			ID:       user.ID,
+			UserName: user.UserName,
+			Password: user.Password,
+			Name:     user.Name,
+			SurName:  user.SurName,
+			Score:    user.Score,
 		}
 	}
 
