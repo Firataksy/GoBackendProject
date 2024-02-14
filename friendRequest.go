@@ -13,6 +13,7 @@ func friendRequest(w http.ResponseWriter, r *http.Request) {
 	headerID := r.Header.Get("userID")
 
 	userControl, _ := rc.Get(context.Background(), "user:"+IDUrl).Result()
+
 	if userControl == "" {
 		responseError(w, "User not found")
 		return
@@ -24,7 +25,6 @@ func friendRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	z := &redis.Z{
-		Score:  1,
 		Member: headerID,
 	}
 
