@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -25,7 +24,6 @@ func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	value, _ := rc.ZRange(context.Background(), "friendrequest_"+headerID, 0, -1).Result()
-	fmt.Println(value)
 
 	if acceptReject.Status == "accept" {
 		for _, data := range value {
