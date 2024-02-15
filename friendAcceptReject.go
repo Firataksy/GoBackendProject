@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -24,14 +25,10 @@ func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	value, _ := rc.ZRange(context.Background(), "friendrequest_"+headerID, 0, -1).Result()
+	fmt.Println(value)
 
 	if acceptReject.Status == "accept" {
 		for _, data := range value {
-
-			if data == "" {
-				responseError(w, "request not found")
-				return
-			}
 
 			z := &redis.Z{
 				Member: data,
@@ -50,6 +47,7 @@ func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 
 	if acceptReject.Status == "reject" {
 		for _, data := range value {
+
 			rc.ZRem(context.Background(), "friendrequest_"+headerID, data)
 		}
 		responseError(w, "friend request rejected")
