@@ -12,12 +12,12 @@ func userSearch(w http.ResponseWriter, r *http.Request) {
 
 	headerUserID := r.Header.Get("userid")
 
-	userID, _ := rc.Get(context.Background(), "userID:"+urlUserName).Result()
-
 	if urlUserName == "" {
 		responseError(w, "can not be empty username in url")
 		return
 	}
+
+	userID, _ := rc.Get(context.Background(), "userID:"+urlUserName).Result()
 
 	if userID == "" {
 		responseError(w, "user not found")
