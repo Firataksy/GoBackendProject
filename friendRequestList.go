@@ -32,6 +32,10 @@ func friendRequestList(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("ERR list friend request list", err)
 		return
 	}
+	if len(friendRequestList) == 0 {
+		responseError(w, "you don't have a request")
+		return
+	}
 
 	friendRequestSlice := make([]FriendRequestList, len(friendRequestList))
 
