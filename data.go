@@ -92,3 +92,7 @@ type FriendRequestList struct {
 	UserName string    `json:"username"`
 	Date     time.Time `json:"date"`
 }
+
+type AcceptReject struct {
+	Status string `json:"status"`
+}
