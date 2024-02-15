@@ -23,7 +23,16 @@ func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	value, _ := rc.ZRange(context.Background(), "friendrequest_"+headerID, 0, -1).Result()
+	value, err := rc.ZRange(context.Background(), "friendrequest_"+headerID, 0, -1).Result()
+	if err != nil {
+		log.Fatal(w, "friend request not found err:", err)
+		return
+	}
+
+	if len(value) == 0 {
+		responseError(w, "you don't have a friend request")
+		return
+	}
 
 	if acceptReject.Status == "accept" {
 		for _, data := range value {
@@ -45,7 +54,6 @@ func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 
 	if acceptReject.Status == "reject" {
 		for _, data := range value {
-
 			rc.ZRem(context.Background(), "friendrequest_"+headerID, data)
 		}
 		responseError(w, "friend request rejected")
