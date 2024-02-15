@@ -13,6 +13,14 @@ func friendRequest(w http.ResponseWriter, r *http.Request) {
 	headerID := r.Header.Get("userID")
 
 	userControl, _ := rc.Get(context.Background(), "user:"+IDUrl).Result()
+	friendControl, _ := rc.ZRange(context.Background(), "friend_"+IDUrl, 0, -1).Result()
+
+	for _, data := range friendControl {
+		if data == headerID {
+			responseError(w, "you are already friend")
+			return
+		}
+	}
 
 	if userControl == "" {
 		responseError(w, "User not found")

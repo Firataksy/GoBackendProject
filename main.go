@@ -26,6 +26,7 @@ func main() {
 	mux.Handle("/friendrequest", tokenMiddleware(http.HandlerFunc(friendRequest)))
 	mux.Handle("/friendrequestlist", tokenMiddleware(http.HandlerFunc(friendRequestList)))
 	mux.Handle("/friendacceptreject", tokenMiddleware(http.HandlerFunc(friendAcceptReject)))
+	mux.Handle("/friendlist", tokenMiddleware(http.HandlerFunc(friendList)))
 	fmt.Println("http listen started")
 	err := http.ListenAndServe(":9000", mux)
 	if err != nil {

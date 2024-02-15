@@ -93,6 +93,11 @@ type FriendRequestList struct {
 	Date     time.Time `json:"date"`
 }
 
+type FriendList struct {
+	ID       int    `json:"ID"`
+	UserName string `json:"username"`
+}
+
 type AcceptReject struct {
 	Status string `json:"status"`
 }
