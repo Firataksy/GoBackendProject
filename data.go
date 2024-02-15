@@ -96,6 +96,10 @@ type FriendList struct {
 	UserName string `json:"username"`
 }
 
+type ID struct {
+	ID int `json:"ID"`
+}
+
 type AcceptReject struct {
 	Status string `json:"status"`
 	ID     int    `json:"ID"`

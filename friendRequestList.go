@@ -22,7 +22,7 @@ func friendRequestList(w http.ResponseWriter, r *http.Request) {
 	lastCount := (firstCount + pageAndCount.Count - 1)
 
 	if firstCount < 0 {
-		responseError(w, "Invalid page number")
+		responseFail(w, "Invalid page number")
 		return
 	}
 
@@ -33,7 +33,7 @@ func friendRequestList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(friendRequestList) == 0 {
-		responseError(w, "you don't have a request")
+		responseFail(w, "you don't have a request")
 		return
 	}
 

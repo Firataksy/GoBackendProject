@@ -82,7 +82,7 @@ func responseSuccess(w http.ResponseWriter, input interface{}) {
 	w.Write(response)
 }
 
-func responseError(w http.ResponseWriter, input string) {
+func responseFail(w http.ResponseWriter, input string) {
 	w.Header().Add("Content-Type", "application/json")
 	ms := &FailMessage{
 		Status:  false,
@@ -148,13 +148,13 @@ func tokenMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("token")
 		if token == "" {
-			responseError(w, "Token cannot be empty")
+			responseFail(w, "Token cannot be empty")
 			return
 		}
 
 		idToken, err := rc.Get(context.Background(), "token:"+token).Result()
 		if err != nil {
-			responseError(w, "Invalid Token")
+			responseFail(w, "Invalid Token")
 			return
 		}
 

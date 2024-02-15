@@ -30,5 +30,5 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseError(w, "Wrong username or password")
+	responseFail(w, "Wrong username or password")
 }

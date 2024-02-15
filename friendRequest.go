@@ -16,7 +16,7 @@ func friendRequest(w http.ResponseWriter, r *http.Request) {
 	userControl, _ := rc.Get(context.Background(), "user:"+IDUrl).Result()
 
 	if userControl == "" {
-		responseError(w, "User not found")
+		responseFail(w, "User not found")
 		return
 	}
 
@@ -24,13 +24,13 @@ func friendRequest(w http.ResponseWriter, r *http.Request) {
 
 	for _, data := range friendControl {
 		if data == ID {
-			responseError(w, "you are already friend")
+			responseFail(w, "you are already friend")
 			return
 		}
 	}
 
 	if IDUrl == ID {
-		responseError(w, "You cannot send yourself a friend request.")
+		responseFail(w, "You cannot send yourself a friend request.")
 		return
 	}
 	date := time.Now()

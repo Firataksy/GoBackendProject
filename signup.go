@@ -20,7 +20,7 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 	check, _ := rc.Get(context.Background(), "player_"+UserID).Result()
 	json.Unmarshal([]byte(check), &user)
 	if user.UserName == userSignUp.UserName {
-		responseError(w, "Username is used")
+		responseFail(w, "Username is used")
 		return
 	}
 
@@ -45,5 +45,5 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 		responseSuccess(w, sm)
 		return
 	}
-	responseError(w, "Information cannot be empty")
+	responseFail(w, "Information cannot be empty")
 }
