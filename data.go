@@ -1,7 +1,5 @@
 package main
 
-import "time"
-
 type Sign struct {
 	Token    string `json:"token"`
 	ID       int    `json:"id"`
@@ -88,9 +86,9 @@ type Simulation struct {
 }
 
 type FriendRequestList struct {
-	ID       int       `json:"ID"`
-	UserName string    `json:"username"`
-	Date     time.Time `json:"date"`
+	ID       int     `json:"ID"`
+	UserName string  `json:"username"`
+	Date     float64 `json:"date"`
 }
 
 type FriendList struct {
@@ -100,4 +98,5 @@ type FriendList struct {
 
 type AcceptReject struct {
 	Status string `json:"status"`
+	ID     int    `json:"ID"`
 }

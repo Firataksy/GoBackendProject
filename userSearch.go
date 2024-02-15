@@ -8,27 +8,27 @@ import (
 
 func userSearch(w http.ResponseWriter, r *http.Request) {
 
-	urlUserName := r.URL.Query().Get("username")
+	searchedUserName := r.URL.Query().Get("username")
 
-	headerUserID := r.Header.Get("userid")
+	ID := r.Header.Get("userid")
 
-	if urlUserName == "" {
+	if searchedUserName == "" {
 		responseError(w, "can not be empty username in url")
 		return
 	}
 
-	userID, _ := rc.Get(context.Background(), "userID:"+urlUserName).Result()
+	userID, _ := rc.Get(context.Background(), "userID:"+searchedUserName).Result()
 
 	if userID == "" {
 		responseError(w, "user not found")
 		return
 	}
 
-	if headerUserID == userID {
+	if ID == userID {
 		responseError(w, "you can not search yourself")
 		return
 	}
 
-	ID, _ := strconv.Atoi(userID)
-	responseSuccess(w, ID)
+	intID, _ := strconv.Atoi(userID)
+	responseSuccess(w, intID)
 }
