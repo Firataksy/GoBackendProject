@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"net/http"
+	"strconv"
 )
 
 func userSearch(w http.ResponseWriter, r *http.Request) {
 
 	searchedUserName := r.URL.Query().Get("username")
 
-	ID := r.Header.Get("userid")
+	headerUserID := r.Header.Get("userid")
 
 	if searchedUserName == "" {
 		responseFail(w, "can not be empty username in url")
@@ -23,10 +24,14 @@ func userSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if ID == userID {
+	if headerUserID == userID {
 		responseFail(w, "you can not search yourself")
 		return
 	}
+	intID, _ := strconv.Atoi(userID)
+	userSearch := UserSearchID{
+		ID: intID,
+	}
 
-	responseSuccess(w, userID)
+	responseSuccess(w, userSearch)
 }

@@ -12,14 +12,14 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	var updatedUser UpdatedUser
 	var updateNewUserData UpdateNewUserData
 
-	userid := r.Header.Get("userid")
+	headerUserID := r.Header.Get("userid")
 	er := json.NewDecoder(r.Body).Decode(&updateNewUserData)
 	if er != nil {
 		http.Error(w, er.Error(), http.StatusBadRequest)
 		return
 	}
 
-	check, _ := rc.Get(context.Background(), "user:"+userid).Result()
+	check, _ := rc.Get(context.Background(), "user:"+headerUserID).Result()
 	checkUser, _ := rc.Get(context.Background(), check).Result()
 
 	if checkUser == "" {

@@ -9,14 +9,14 @@ import (
 
 func getUserData(w http.ResponseWriter, r *http.Request) {
 	var user User
-	userID := r.Header.Get("userid")
-	if userID == "" {
+	headerUserID := r.Header.Get("userid")
+	if headerUserID == "" {
 		return
 	}
 
-	idInt, _ := strconv.Atoi(userID)
+	idInt, _ := strconv.Atoi(headerUserID)
 
-	idUserName, _ := rc.Get(context.Background(), "user:"+userID).Result()
+	idUserName, _ := rc.Get(context.Background(), "user:"+headerUserID).Result()
 	val, _ := rc.Get(context.Background(), idUserName).Result()
 
 	json.Unmarshal([]byte(val), &user)

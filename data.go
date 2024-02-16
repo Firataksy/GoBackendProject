@@ -101,7 +101,7 @@ type FriendList struct {
 	UserName string `json:"username"`
 }
 
-type ID struct {
+type UserSearchID struct {
 	ID int `json:"ID"`
 }
 

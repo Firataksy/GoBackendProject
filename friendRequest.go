@@ -11,7 +11,7 @@ import (
 func friendRequest(w http.ResponseWriter, r *http.Request) {
 	IDUrl := r.URL.Query().Get("userid")
 
-	ID := r.Header.Get("userID")
+	headerUserID := r.Header.Get("userID")
 
 	userControl, _ := rc.Get(context.Background(), "user:"+IDUrl).Result()
 
@@ -23,13 +23,13 @@ func friendRequest(w http.ResponseWriter, r *http.Request) {
 	friendControl, _ := rc.ZRange(context.Background(), "friend_"+IDUrl, 0, -1).Result()
 
 	for _, data := range friendControl {
-		if data == ID {
+		if data == headerUserID {
 			responseFail(w, "you are already friend")
 			return
 		}
 	}
 
-	if IDUrl == ID {
+	if IDUrl == headerUserID {
 		responseFail(w, "You cannot send yourself a friend request.")
 		return
 	}
@@ -38,7 +38,7 @@ func friendRequest(w http.ResponseWriter, r *http.Request) {
 	unixDate := int(date.Unix())
 	z := &redis.Z{
 		Score:  float64(unixDate),
-		Member: ID,
+		Member: headerUserID,
 	}
 
 	rc.ZAdd(context.Background(), "friendrequest_"+IDUrl, *z)

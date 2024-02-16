@@ -10,7 +10,7 @@ import (
 
 func friendList(w http.ResponseWriter, r *http.Request) {
 	var pageAndCount *LeaderBoard
-	headerID := r.Header.Get("userID")
+	headerUserID := r.Header.Get("userID")
 
 	err := json.NewDecoder(r.Body).Decode(&pageAndCount)
 	if err != nil {
@@ -26,7 +26,7 @@ func friendList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	friendList, err := rc.ZRange(context.Background(), "friend_"+headerID, int64(firstCount), int64(lastCount)).Result()
+	friendList, err := rc.ZRange(context.Background(), "friend_"+headerUserID, int64(firstCount), int64(lastCount)).Result()
 	if err != nil {
 		log.Fatal("ERR list friend request list", err)
 		return
