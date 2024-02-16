@@ -23,7 +23,7 @@ type SuccessData struct {
 	SurName  string `json:"surname"`
 }
 
-type SuccessMessage struct {
+type TokenUsername struct {
 	Token    string `json:"token"`
 	UserName string `json:"username"`
 }
@@ -33,7 +33,12 @@ type FailMessage struct {
 	Message string `json:"message"`
 }
 
-type Response struct {
+type SuccessMessage struct {
+	Status  bool        `json:"status"`
+	Message interface{} `json:"message"`
+}
+
+type Success struct {
 	Status bool        `json:"status"`
 	Data   interface{} `json:"data"`
 }

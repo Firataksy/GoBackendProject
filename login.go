@@ -21,7 +21,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	userLogin.Password = md5Encode(userLogin.Password)
 	if user.Pwd == userLogin.Password {
 
-		sm := SuccessMessage{
+		sm := TokenUsername{
 			Token:    user.Token,
 			UserName: userLogin.UserName,
 		}

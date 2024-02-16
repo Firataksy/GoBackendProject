@@ -34,7 +34,7 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 		userSignUp.Token = token
 		redisSetToken(userSignUp)
 
-		sm := SuccessMessage{
+		sm := TokenUsername{
 			Token:    userSignUp.Token,
 			UserName: userSignUp.UserName,
 		}

@@ -42,5 +42,5 @@ func friendRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rc.ZAdd(context.Background(), "friendrequest_"+IDUrl, *z)
-	responseSuccess(w, "request sent successfully")
+	responseSuccessMessage(w, "request sent successfully")
 }

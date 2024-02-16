@@ -62,7 +62,7 @@ func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 				rc.ZRem(context.Background(), "friendrequest_"+strID, headerUserID)
 			}
 		}
-		responseSuccess(w, "friend request accepted")
+		responseSuccessMessage(w, "friend request accepted")
 	}
 
 	if acceptReject.Status == "reject" {

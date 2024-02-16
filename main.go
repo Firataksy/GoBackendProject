@@ -71,9 +71,20 @@ func jsonConvert(w http.ResponseWriter, input interface{}) []byte {
 	return Json
 }
 
+func responseSuccessMessage(w http.ResponseWriter, input interface{}) {
+	w.Header().Add("Content-Type", "application/json")
+	rp := SuccessMessage{
+		Status:  true,
+		Message: input,
+	}
+
+	response := jsonConvert(w, rp)
+	w.Write(response)
+}
+
 func responseSuccess(w http.ResponseWriter, input interface{}) {
 	w.Header().Add("Content-Type", "application/json")
-	rp := Response{
+	rp := Success{
 		Status: true,
 		Data:   input,
 	}
