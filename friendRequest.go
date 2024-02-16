@@ -33,6 +33,7 @@ func friendRequest(w http.ResponseWriter, r *http.Request) {
 		responseFail(w, "You cannot send yourself a friend request.")
 		return
 	}
+
 	date := time.Now()
 	unixDate := int(date.Unix())
 	z := &redis.Z{

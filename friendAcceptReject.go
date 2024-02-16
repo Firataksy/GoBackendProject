@@ -12,7 +12,7 @@ import (
 
 func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 	var acceptReject AcceptReject
-	ID := r.Header.Get("userID")
+	headerUserID := r.Header.Get("userID")
 	err := json.NewDecoder(r.Body).Decode(&acceptReject)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -26,43 +26,49 @@ func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 
 	strID := strconv.Itoa(acceptReject.ID)
 
-	value, err := rc.ZRange(context.Background(), "friendrequest_"+ID, 0, -1).Result()
+	if headerUserID == strID {
+		responseFail(w, "you can not accept yourself request")
+		return
+	}
+
+	value, _ := rc.ZRange(context.Background(), "friendrequest_"+headerUserID, 0, -1).Result()
 	if err != nil {
 		log.Fatal(w, "friend request not found err:", err)
 		return
 	}
 
-	if len(value) == 0 {
+	if value == nil {
 		responseFail(w, "you don't have a friend request")
 		return
 	}
 
 	if acceptReject.Status == "accept" {
 		for _, data := range value {
-			z := &redis.Z{
-				Member: data,
-			}
-			r := &redis.Z{
-				Member: ID,
-			}
 
-			if strID == data {
-				rc.ZAdd(context.Background(), "friend_"+ID, *z).Result()
-				rc.ZAdd(context.Background(), "friend_"+data, *r).Result()
+			if data == strID {
 
-				rc.ZRem(context.Background(), "friendrequest_"+ID, strID)
+				z := &redis.Z{
+					Member: data,
+				}
+				r := &redis.Z{
+					Member: headerUserID,
+				}
+
+				//player_1 = ecea5a261d699bd5 // player_2 = a2cf6530a027426c // player_3 = f4a028f08cac98d0  // player_4 = c051f0f740018cbd
+				rc.ZAdd(context.Background(), "friend_"+headerUserID, *z).Result()
+				rc.ZAdd(context.Background(), "friend_"+strID, *r).Result()
+
+				rc.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)
+				rc.ZRem(context.Background(), "friendrequest_"+strID, headerUserID)
 			}
-
 		}
 		responseSuccess(w, "friend request accepted")
 	}
 
 	if acceptReject.Status == "reject" {
-		for _, data := range value {
-			if data == strID {
-				rc.ZRem(context.Background(), "friendrequest_"+ID, strID)
-			}
-		}
+
+		rc.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)
+
 		responseFail(w, "friend request rejected")
 	}
 }
