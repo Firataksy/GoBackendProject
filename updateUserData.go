@@ -23,7 +23,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	checkUser, _ := rc.Get(context.Background(), check).Result()
 
 	if checkUser == "" {
-		responseError(w, "User not found")
+		responseFail(w, "User not found")
 		return
 	}
 
@@ -31,14 +31,14 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal([]byte(checkUser), &updatedUser)
 
 	if updateNewUserData.UserName == userData.UserName {
-		responseError(w, "You already use this username")
+		responseFail(w, "You already use this username")
 		return
 	}
 
 	checkUserID, _ := rc.Get(context.Background(), updateNewUserData.UserName).Result()
 
 	if checkUserID != "" {
-		responseError(w, "Username is used")
+		responseFail(w, "Username is used")
 		return
 	}
 

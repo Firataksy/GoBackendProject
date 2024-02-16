@@ -18,7 +18,7 @@ func match(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if match.UserID1 == match.UserID2 {
-		responseError(w, "It cannot be the same in 2 users")
+		responseFail(w, "It cannot be the same in 2 users")
 		return
 	}
 
@@ -31,7 +31,7 @@ func match(w http.ResponseWriter, r *http.Request) {
 	checkUser2, _ := rc.Get(context.Background(), checkUserName2).Result()
 
 	if checkUser1 == "" || checkUser2 == "" {
-		responseError(w, "User not found")
+		responseFail(w, "User not found")
 		return
 	}
 

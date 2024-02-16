@@ -24,7 +24,7 @@ func listLeaderBoard(w http.ResponseWriter, r *http.Request) {
 	lastCount := (firstCount + leaderBoard.Count - 1)
 
 	if firstCount < 0 {
-		responseError(w, "Invalid page number")
+		responseFail(w, "Invalid page number")
 		return
 	}
 

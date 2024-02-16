@@ -3,32 +3,30 @@ package main
 import (
 	"context"
 	"net/http"
-	"strconv"
 )
 
 func userSearch(w http.ResponseWriter, r *http.Request) {
 
-	urlUserName := r.URL.Query().Get("username")
+	searchedUserName := r.URL.Query().Get("username")
 
-	headerUserID := r.Header.Get("userid")
+	ID := r.Header.Get("userid")
 
-	if urlUserName == "" {
-		responseError(w, "can not be empty username in url")
+	if searchedUserName == "" {
+		responseFail(w, "can not be empty username in url")
 		return
 	}
 
-	userID, _ := rc.Get(context.Background(), "userID:"+urlUserName).Result()
+	userID, _ := rc.Get(context.Background(), "userID:"+searchedUserName).Result()
 
 	if userID == "" {
-		responseError(w, "user not found")
+		responseFail(w, "user not found")
 		return
 	}
 
-	if headerUserID == userID {
-		responseError(w, "you can not search yourself")
+	if ID == userID {
+		responseFail(w, "you can not search yourself")
 		return
 	}
 
-	ID, _ := strconv.Atoi(userID)
-	responseSuccess(w, ID)
+	responseSuccess(w, userID)
 }

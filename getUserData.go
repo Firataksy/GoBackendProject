@@ -32,5 +32,5 @@ func getUserData(w http.ResponseWriter, r *http.Request) {
 		responseSuccess(w, sd)
 		return
 	}
-	responseError(w, "User not found")
+	responseFail(w, "User not found")
 }
