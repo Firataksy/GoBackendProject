@@ -91,21 +91,21 @@ type Simulation struct {
 }
 
 type FriendRequestList struct {
-	ID       int     `json:"ID"`
+	ID       int     `json:"id"`
 	UserName string  `json:"username"`
 	Date     float64 `json:"date"`
 }
 
 type FriendList struct {
-	ID       int    `json:"ID"`
+	ID       int    `json:"id"`
 	UserName string `json:"username"`
 }
 
 type UserSearchID struct {
-	ID int `json:"ID"`
+	ID int `json:"id"`
 }
 
 type AcceptReject struct {
 	Status string `json:"status"`
-	ID     int    `json:"ID"`
+	ID     int    `json:"id"`
 }
