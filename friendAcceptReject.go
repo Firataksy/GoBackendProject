@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -38,28 +37,24 @@ func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if acceptReject.Status == "accept" && value != 0 {
-
-		date := time.Now()
-		unixDate := int(date.Unix())
+	if acceptReject.Status == "accept" && value != 0.0 {
 
 		rc.ZAdd(context.Background(), "friend_"+headerUserID, redis.Z{
 			Member: strID,
-			Score:  float64(unixDate),
 		}).Result()
 
 		rc.ZAdd(context.Background(), "friend_"+strID, redis.Z{
 			Member: headerUserID,
-			Score:  float64(unixDate),
 		}).Result()
 
 		rc.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)
 		rc.ZRem(context.Background(), "friendrequest_"+strID, headerUserID)
+
 		responseSuccessMessage(w, "friend request accepted")
 		return
 	}
 
-	if acceptReject.Status == "reject" && value != 0 {
+	if acceptReject.Status == "reject" && value != 0.0 {
 
 		rc.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)
 
