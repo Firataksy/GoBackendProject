@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -32,44 +32,40 @@ func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	value, _ := rc.ZRange(context.Background(), "friendrequest_"+headerUserID, 0, -1).Result()
+	value, _ := rc.ZScore(context.Background(), "friendrequest_"+headerUserID, strID).Result()
 	if err != nil {
 		log.Fatal(w, "friend request found err:", err)
 		return
 	}
 
-	fmt.Println(value)
-	if value == nil {
-		responseFail(w, "you don't have a friend request")
+	if acceptReject.Status == "accept" && value != 0 {
+
+		date := time.Now()
+		unixDate := int(date.Unix())
+
+		rc.ZAdd(context.Background(), "friend_"+headerUserID, redis.Z{
+			Member: strID,
+			Score:  float64(unixDate),
+		}).Result()
+
+		rc.ZAdd(context.Background(), "friend_"+strID, redis.Z{
+			Member: headerUserID,
+			Score:  float64(unixDate),
+		}).Result()
+
+		rc.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)
+		rc.ZRem(context.Background(), "friendrequest_"+strID, headerUserID)
+		responseSuccessMessage(w, "friend request accepted")
 		return
 	}
 
-	if acceptReject.Status == "accept" {
-		for _, data := range value {
-
-			if data == strID {
-
-				rc.ZAdd(context.Background(), "friend_"+headerUserID, redis.Z{
-					Member: data,
-				}).Result()
-
-				rc.ZAdd(context.Background(), "friend_"+strID, redis.Z{
-					Member: headerUserID,
-				}).Result()
-
-				rc.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)
-				rc.ZRem(context.Background(), "friendrequest_"+strID, headerUserID)
-				responseSuccessMessage(w, "friend request accepted")
-				return
-			}
-		}
-		responseFail(w, "friend request not found")
-	}
-
-	if acceptReject.Status == "reject" {
+	if acceptReject.Status == "reject" && value != 0 {
 
 		rc.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)
 
 		responseFail(w, "friend request rejected")
+		return
 	}
+
+	responseFail(w, "request not found")
 }
