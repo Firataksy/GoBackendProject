@@ -46,15 +46,9 @@ func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 
 	if acceptReject.Status == "accept" {
 		for _, data := range value {
-			fmt.Println("a: ", data, strID)
-			if data != strID {
-				responseFail(w, "friend request not found")
-				return
-			}
 
 			if data == strID {
 
-				//player_1 = 09999bfacabc6ed2 // player_2 = 21b102e34eeb4b82 // player_3 = b843843f0c6cf06e  // player_4 = 2d6213e3d94a0150
 				rc.ZAdd(context.Background(), "friend_"+headerUserID, redis.Z{
 					Member: data,
 				}).Result()
@@ -65,9 +59,11 @@ func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 
 				rc.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)
 				rc.ZRem(context.Background(), "friendrequest_"+strID, headerUserID)
+				responseSuccessMessage(w, "friend request accepted")
+				return
 			}
 		}
-		responseSuccessMessage(w, "friend request accepted")
+		responseFail(w, "friend request not found")
 	}
 
 	if acceptReject.Status == "reject" {
