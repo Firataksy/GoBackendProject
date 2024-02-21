@@ -33,17 +33,17 @@ func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 
 	value, _ := rc.ZRange(context.Background(), "friendrequest_"+headerUserID, 0, -1).Result()
 	if err != nil {
-		log.Fatal(w, "friend request not found err:", err)
-		return
-	}
-
-	if value == nil {
-		responseFail(w, "you don't have a friend request")
+		log.Fatal(w, "friend request found err:", err)
 		return
 	}
 
 	if acceptReject.Status == "accept" {
 		for _, data := range value {
+
+			if data != strID {
+				responseFail(w, "friend request not found")
+				return
+			}
 
 			if data == strID {
 
@@ -54,7 +54,7 @@ func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 					Member: headerUserID,
 				}
 
-				//player_1 = ecea5a261d699bd5 // player_2 = a2cf6530a027426c // player_3 = f4a028f08cac98d0  // player_4 = c051f0f740018cbd
+				//player_1 = 09999bfacabc6ed2 // player_2 = 21b102e34eeb4b82 // player_3 = b843843f0c6cf06e  // player_4 = 2d6213e3d94a0150
 				rc.ZAdd(context.Background(), "friend_"+headerUserID, *z).Result()
 				rc.ZAdd(context.Background(), "friend_"+strID, *r).Result()
 
