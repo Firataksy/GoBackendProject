@@ -41,10 +41,12 @@ func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 
 		rc.ZAdd(context.Background(), "friend_"+headerUserID, redis.Z{
 			Member: strID,
+			Score:  1,
 		}).Result()
 
 		rc.ZAdd(context.Background(), "friend_"+strID, redis.Z{
 			Member: headerUserID,
+			Score:  1,
 		}).Result()
 
 		rc.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)

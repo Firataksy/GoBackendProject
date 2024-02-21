@@ -20,30 +20,11 @@ func friendRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	friendControl, _ := rc.ZRange(context.Background(), "friend_"+IDUrl, 0, -1).Result()
+	friendControl, _ := rc.ZScore(context.Background(), "friend_"+IDUrl, headerUserID).Result()
 
-	for _, data := range friendControl {
-		if data == headerUserID {
-			responseFail(w, "you are already friend")
-			return
-		}
-	}
-
-	friendRequestControl, _ := rc.ZRange(context.Background(), "friendrequest_"+IDUrl, 0, -1).Result()
-	friendRequestControl2, _ := rc.ZRange(context.Background(), "friendrequest_"+headerUserID, 0, -1).Result()
-
-	for _, data := range friendRequestControl {
-		if data == headerUserID {
-			responseFail(w, "you already sent a friend request")
-			return
-		}
-	}
-
-	for _, data := range friendRequestControl2 {
-		if data == headerUserID {
-			responseFail(w, "you already sent a friend request")
-			return
-		}
+	if friendControl == 0.0 {
+		responseFail(w, "you are already friends")
+		return
 	}
 
 	if IDUrl == headerUserID {
