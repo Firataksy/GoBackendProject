@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"context"
@@ -8,26 +8,26 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func friendRequest(w http.ResponseWriter, r *http.Request) {
-	IDUrl := r.URL.Query().Get("userid")
+func (rc *RedisClient) FriendRequest(w http.ResponseWriter, r *http.Request) {
+	urlUserID := r.URL.Query().Get("userid")
 
 	headerUserID := r.Header.Get("userID")
 
-	userControl, _ := rc.Get(context.Background(), "user:"+IDUrl).Result()
+	userControl, _ := rc.Client.Get(context.Background(), "user:"+urlUserID).Result()
 
 	if userControl == "" {
 		responseFail(w, "User not found")
 		return
 	}
 
-	friendControl, _ := rc.ZScore(context.Background(), "friend_"+IDUrl, headerUserID).Result()
+	friendControl, _ := rc.Client.ZScore(context.Background(), "friend_"+urlUserID, headerUserID).Result()
 
-	if friendControl == 0.0 {
+	if friendControl == 1 {
 		responseFail(w, "you are already friends")
 		return
 	}
 
-	if IDUrl == headerUserID {
+	if urlUserID == headerUserID {
 		responseFail(w, "You cannot send yourself a friend request.")
 		return
 	}
@@ -39,6 +39,6 @@ func friendRequest(w http.ResponseWriter, r *http.Request) {
 		Member: headerUserID,
 	}
 
-	rc.ZAdd(context.Background(), "friendrequest_"+IDUrl, *z)
+	rc.Client.ZAdd(context.Background(), "friendrequest_"+urlUserID, *z)
 	responseSuccessMessage(w, "request sent successfully")
 }

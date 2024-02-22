@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func friendRequestList(w http.ResponseWriter, r *http.Request) {
+func (rc *RedisClient) FriendRequestList(w http.ResponseWriter, r *http.Request) {
 	var pageAndCount *LeaderBoard
 	headerUserID := r.Header.Get("userID")
 
@@ -26,7 +26,7 @@ func friendRequestList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	friendRequestList, err := rc.ZRangeWithScores(context.Background(), "friendrequest_"+headerUserID, int64(firstCount), int64(lastCount)).Result()
+	friendRequestList, err := rc.Client.ZRangeWithScores(context.Background(), "friendrequest_"+headerUserID, int64(firstCount), int64(lastCount)).Result()
 	if err != nil {
 		log.Fatal("ERR list friend request list", err)
 		return
@@ -40,7 +40,7 @@ func friendRequestList(w http.ResponseWriter, r *http.Request) {
 	friendRequestSlice := make([]FriendRequestList, len(friendRequestList))
 
 	for i, requestList := range friendRequestList {
-		data, _ := rc.Get(context.Background(), "user:"+requestList.Member.(string)).Result()
+		data, _ := rc.Client.Get(context.Background(), "user:"+requestList.Member.(string)).Result()
 
 		intID, _ := strconv.Atoi(requestList.Member.(string))
 

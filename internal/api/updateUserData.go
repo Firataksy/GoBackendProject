@@ -1,13 +1,15 @@
-package main
+package api
 
 import (
 	"context"
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/my/repo/internal/utils"
 )
 
-func updateUserData(w http.ResponseWriter, r *http.Request) {
+func (rc *RedisClient) UpdateUserData(w http.ResponseWriter, r *http.Request) {
 	var userData *Sign
 	var updatedUser UpdatedUser
 	var updateNewUserData UpdateNewUserData
@@ -19,8 +21,8 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	check, _ := rc.Get(context.Background(), "user:"+headerUserID).Result()
-	checkUser, _ := rc.Get(context.Background(), check).Result()
+	check, _ := rc.Client.Get(context.Background(), "user:"+headerUserID).Result()
+	checkUser, _ := rc.Client.Get(context.Background(), check).Result()
 
 	if checkUser == "" {
 		responseFail(w, "User not found")
@@ -35,7 +37,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	checkUserID, _ := rc.Get(context.Background(), updateNewUserData.UserName).Result()
+	checkUserID, _ := rc.Client.Get(context.Background(), updateNewUserData.UserName).Result()
 
 	if checkUserID != "" {
 		responseFail(w, "Username is used")
@@ -43,7 +45,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if updateNewUserData.UserName != "" {
-		_, userRenameErr := rc.Rename(context.Background(), userData.UserName, updateNewUserData.UserName).Result()
+		_, userRenameErr := rc.Client.Rename(context.Background(), userData.UserName, updateNewUserData.UserName).Result()
 		if userRenameErr != nil {
 			log.Fatal("Redis Not Renamed Username", userRenameErr)
 		}
@@ -52,7 +54,7 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if updateNewUserData.Password != "" {
-		hashPWD := md5Encode(updateNewUserData.Password)
+		hashPWD := utils.Md5Encode(updateNewUserData.Password)
 		userData.Password = hashPWD
 	}
 
@@ -66,6 +68,6 @@ func updateUserData(w http.ResponseWriter, r *http.Request) {
 		updatedUser.SurName = updateNewUserData.SurName
 	}
 
-	redisSetDataAndID(w, userData)
+	rc.redisSetDataAndID(w, userData)
 	responseSuccess(w, updatedUser)
 }
