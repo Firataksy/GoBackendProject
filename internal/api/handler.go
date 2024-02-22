@@ -1,42 +1,17 @@
 package api
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
-func (rc *RedisClient) tokenMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token := r.Header.Get("token")
-		if token == "" {
-			responseFail(w, "Token cannot be empty")
-			return
-		}
-
-		idToken, err := rc.Client.Get(context.Background(), "token:"+token).Result()
-		if err != nil {
-			responseFail(w, "Invalid Token")
-			return
-		}
-
-		if idToken == "" {
-			return
-		}
-
-		r.Header.Set("userID", idToken)
-		next.ServeHTTP(w, r)
-	})
-}
-
-func Handle() error {
+func Handler() error {
 	rc, err := ConnectRedis()
 	if err != nil {
 		return err
 	}
-
 	mux := mux.NewRouter()
 	mux.HandleFunc("/signup", rc.SignUp)
 	mux.HandleFunc("/login", rc.Login)

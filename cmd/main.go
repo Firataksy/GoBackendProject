@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	err := api.Handle()
+	err := api.Handler()
 	if err != nil {
 		fmt.Println(err)
 	}
