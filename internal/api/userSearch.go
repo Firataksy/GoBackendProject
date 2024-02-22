@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func userSearch(w http.ResponseWriter, r *http.Request) {
+func (rc *RedisClient) UserSearch(w http.ResponseWriter, r *http.Request) {
 
 	searchedUserName := r.URL.Query().Get("username")
 
@@ -17,7 +17,7 @@ func userSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, _ := rc.Get(context.Background(), "userID:"+searchedUserName).Result()
+	userID, _ := rc.Client.Get(context.Background(), "userID:"+searchedUserName).Result()
 
 	if userID == "" {
 		responseFail(w, "user not found")

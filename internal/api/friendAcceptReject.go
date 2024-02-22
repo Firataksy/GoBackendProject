@@ -1,16 +1,15 @@
-package main
+package api
 
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/redis/go-redis/v9"
 )
 
-func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
+func (rc *RedisClient) FriendAcceptReject(w http.ResponseWriter, r *http.Request) {
 	var acceptReject AcceptReject
 	headerUserID := r.Header.Get("userID")
 	err := json.NewDecoder(r.Body).Decode(&acceptReject)
@@ -31,26 +30,22 @@ func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	value, _ := rc.ZScore(context.Background(), "friendrequest_"+headerUserID, strID).Result()
-	if err != nil {
-		log.Fatal(w, "friend request found err:", err)
-		return
-	}
+	value, _ := rc.Client.ZScore(context.Background(), "friendrequest_"+headerUserID, strID).Result()
 
 	if acceptReject.Status == "accept" && value != 0.0 {
 
-		rc.ZAdd(context.Background(), "friend_"+headerUserID, redis.Z{
+		rc.Client.ZAdd(context.Background(), "friend_"+headerUserID, redis.Z{
 			Member: strID,
 			Score:  1,
 		}).Result()
 
-		rc.ZAdd(context.Background(), "friend_"+strID, redis.Z{
+		rc.Client.ZAdd(context.Background(), "friend_"+strID, redis.Z{
 			Member: headerUserID,
 			Score:  1,
 		}).Result()
 
-		rc.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)
-		rc.ZRem(context.Background(), "friendrequest_"+strID, headerUserID)
+		rc.Client.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)
+		rc.Client.ZRem(context.Background(), "friendrequest_"+strID, headerUserID)
 
 		responseSuccessMessage(w, "friend request accepted")
 		return
@@ -58,7 +53,7 @@ func friendAcceptReject(w http.ResponseWriter, r *http.Request) {
 
 	if acceptReject.Status == "reject" && value != 0.0 {
 
-		rc.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)
+		rc.Client.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)
 
 		responseFail(w, "friend request rejected")
 		return

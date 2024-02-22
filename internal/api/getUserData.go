@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func getUserData(w http.ResponseWriter, r *http.Request) {
+func (rc *RedisClient) GetUserData(w http.ResponseWriter, r *http.Request) {
 	var user User
 	headerUserID := r.Header.Get("userid")
 	if headerUserID == "" {
@@ -16,8 +16,8 @@ func getUserData(w http.ResponseWriter, r *http.Request) {
 
 	idInt, _ := strconv.Atoi(headerUserID)
 
-	idUserName, _ := rc.Get(context.Background(), "user:"+headerUserID).Result()
-	val, _ := rc.Get(context.Background(), idUserName).Result()
+	userName, _ := rc.Client.Get(context.Background(), "user:"+headerUserID).Result()
+	val, _ := rc.Client.Get(context.Background(), userName).Result()
 
 	json.Unmarshal([]byte(val), &user)
 	if user.ID == idInt && idInt != 0 {

@@ -1,4 +1,4 @@
-package main
+package api
 
 type Sign struct {
 	Token    string `json:"token"`

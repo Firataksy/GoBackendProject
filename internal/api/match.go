@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func match(w http.ResponseWriter, r *http.Request) {
+func (rc *RedisClient) Match(w http.ResponseWriter, r *http.Request) {
 	var match Match
 	var user *Sign
 
@@ -25,10 +25,10 @@ func match(w http.ResponseWriter, r *http.Request) {
 	strUserID1 := strconv.Itoa(match.UserID1)
 	strUserID2 := strconv.Itoa(match.UserID2)
 
-	checkUserName1, _ := rc.Get(context.Background(), "user:"+strUserID1).Result()
-	checkUserName2, _ := rc.Get(context.Background(), "user:"+strUserID2).Result()
-	checkUser1, _ := rc.Get(context.Background(), checkUserName1).Result()
-	checkUser2, _ := rc.Get(context.Background(), checkUserName2).Result()
+	checkUserName1, _ := rc.Client.Get(context.Background(), "user:"+strUserID1).Result()
+	checkUserName2, _ := rc.Client.Get(context.Background(), "user:"+strUserID2).Result()
+	checkUser1, _ := rc.Client.Get(context.Background(), checkUserName1).Result()
+	checkUser2, _ := rc.Client.Get(context.Background(), checkUserName2).Result()
 
 	if checkUser1 == "" || checkUser2 == "" {
 		responseFail(w, "User not found")
@@ -37,12 +37,12 @@ func match(w http.ResponseWriter, r *http.Request) {
 
 	if match.Score1 > match.Score2 {
 		json.Unmarshal([]byte(checkUser1), &user)
-		win(w, user)
+		rc.win(w, user)
 	}
 
 	if match.Score1 < match.Score2 {
 		json.Unmarshal([]byte(checkUser2), &user)
-		win(w, user)
+		rc.win(w, user)
 	}
 
 	if match.Score1 == match.Score2 {
@@ -50,6 +50,6 @@ func match(w http.ResponseWriter, r *http.Request) {
 
 		json.Unmarshal([]byte(checkUser2), &user)
 
-		draw(w, user, user)
+		rc.draw(w, user, user)
 	}
 }
