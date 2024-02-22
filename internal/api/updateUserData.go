@@ -49,8 +49,10 @@ func (rc *RedisClient) UpdateUserData(w http.ResponseWriter, r *http.Request) {
 		if userRenameErr != nil {
 			log.Fatal("Redis Not Renamed Username", userRenameErr)
 		}
+		rc.Client.Del(context.Background(), "userID:"+userData.UserName)
 		userData.UserName = updateNewUserData.UserName
 		updatedUser.UserName = updateNewUserData.UserName
+
 	}
 
 	if updateNewUserData.Password != "" {
