@@ -9,25 +9,25 @@ import (
 )
 
 func (rc *RedisClient) FriendRequest(w http.ResponseWriter, r *http.Request) {
-	urlUserID := r.URL.Query().Get("userid")
+	userID := r.URL.Query().Get("userid")
 
 	headerUserID := r.Header.Get("userID")
 
-	userControl, _ := rc.Client.Get(context.Background(), "user:"+urlUserID).Result()
+	userControl, _ := rc.Client.Get(context.Background(), "user:"+userID).Result()
 
 	if userControl == "" {
 		responseFail(w, "User not found")
 		return
 	}
 
-	friendControl, _ := rc.Client.ZScore(context.Background(), "friend_"+urlUserID, headerUserID).Result()
+	friendControl, _ := rc.Client.ZScore(context.Background(), "friend_"+userID, headerUserID).Result()
 
 	if friendControl == 1 {
 		responseFail(w, "you are already friends")
 		return
 	}
 
-	if urlUserID == headerUserID {
+	if userID == headerUserID {
 		responseFail(w, "You cannot send yourself a friend request.")
 		return
 	}
@@ -39,6 +39,6 @@ func (rc *RedisClient) FriendRequest(w http.ResponseWriter, r *http.Request) {
 		Member: headerUserID,
 	}
 
-	rc.Client.ZAdd(context.Background(), "friendrequest_"+urlUserID, *z)
+	rc.Client.ZAdd(context.Background(), "friendrequest_"+userID, *z)
 	responseSuccessMessage(w, "request sent successfully")
 }
