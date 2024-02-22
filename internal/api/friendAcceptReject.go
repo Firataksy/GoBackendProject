@@ -19,14 +19,14 @@ func (rc *RedisClient) FriendAcceptReject(w http.ResponseWriter, r *http.Request
 	}
 
 	if acceptReject.Status != "accept" && acceptReject.Status != "reject" {
-		responseFail(w, "please write accept or reject")
+		ResponseFail(w, "please write accept or reject")
 		return
 	}
 
 	strID := strconv.Itoa(acceptReject.ID)
 
 	if headerUserID == strID {
-		responseFail(w, "you can not accept yourself request")
+		ResponseFail(w, "you can not accept yourself request")
 		return
 	}
 
@@ -47,7 +47,7 @@ func (rc *RedisClient) FriendAcceptReject(w http.ResponseWriter, r *http.Request
 		rc.Client.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)
 		rc.Client.ZRem(context.Background(), "friendrequest_"+strID, headerUserID)
 
-		responseSuccessMessage(w, "friend request accepted")
+		ResponseSuccessMessage(w, "friend request accepted")
 		return
 	}
 
@@ -55,9 +55,9 @@ func (rc *RedisClient) FriendAcceptReject(w http.ResponseWriter, r *http.Request
 
 		rc.Client.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)
 
-		responseFail(w, "friend request rejected")
+		ResponseFail(w, "friend request rejected")
 		return
 	}
 
-	responseFail(w, "request not found")
+	ResponseFail(w, "request not found")
 }

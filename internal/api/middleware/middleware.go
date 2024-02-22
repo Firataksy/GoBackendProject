@@ -3,19 +3,25 @@ package api
 import (
 	"context"
 	"net/http"
+
+	"github.com/my/repo/internal/api"
 )
 
-func (rc *RedisClient) tokenMiddleware(next http.Handler) http.Handler {
+func TokenMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		rc, err := api.ConnectRedis()
+		if err != nil {
+			return
+		}
 		token := r.Header.Get("token")
 		if token == "" {
-			responseFail(w, "Token cannot be empty")
+			api.ResponseFail(w, "Token cannot be empty")
 			return
 		}
 
 		idToken, err := rc.Client.Get(context.Background(), "token:"+token).Result()
 		if err != nil {
-			responseFail(w, "Invalid Token")
+			api.ResponseFail(w, "Invalid Token")
 			return
 		}
 

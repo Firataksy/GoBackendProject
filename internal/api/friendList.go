@@ -22,7 +22,7 @@ func (rc *RedisClient) FriendList(w http.ResponseWriter, r *http.Request) {
 	lastCount := (firstCount + pageAndCount.Count - 1)
 
 	if firstCount < 0 {
-		responseFail(w, "Invalid page number")
+		ResponseFail(w, "Invalid page number")
 		return
 	}
 
@@ -33,7 +33,7 @@ func (rc *RedisClient) FriendList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(friendList) == 0 {
-		responseFail(w, "you don't have a friend")
+		ResponseFail(w, "you don't have a friend")
 		return
 	}
 
@@ -49,5 +49,5 @@ func (rc *RedisClient) FriendList(w http.ResponseWriter, r *http.Request) {
 			UserName: data,
 		}
 	}
-	responseSuccess(w, friendSlice)
+	ResponseSuccess(w, friendSlice)
 }

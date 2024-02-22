@@ -13,19 +13,19 @@ func (rc *RedisClient) UserSearch(w http.ResponseWriter, r *http.Request) {
 	headerUserID := r.Header.Get("userid")
 
 	if searchedUserName == "" {
-		responseFail(w, "can not be empty username in url")
+		ResponseFail(w, "can not be empty username in url")
 		return
 	}
 
 	userID, _ := rc.Client.Get(context.Background(), "userID:"+searchedUserName).Result()
 
 	if userID == "" {
-		responseFail(w, "user not found")
+		ResponseFail(w, "user not found")
 		return
 	}
 
 	if headerUserID == userID {
-		responseFail(w, "you can not search yourself")
+		ResponseFail(w, "you can not search yourself")
 		return
 	}
 	intID, _ := strconv.Atoi(userID)
@@ -33,5 +33,5 @@ func (rc *RedisClient) UserSearch(w http.ResponseWriter, r *http.Request) {
 		ID: intID,
 	}
 
-	responseSuccess(w, userSearch)
+	ResponseSuccess(w, userSearch)
 }

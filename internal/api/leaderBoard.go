@@ -24,7 +24,7 @@ func (rc *RedisClient) ListLeaderBoard(w http.ResponseWriter, r *http.Request) {
 	lastCount := (firstCount + leaderBoard.Count - 1)
 
 	if firstCount < 0 {
-		responseFail(w, "Invalid page number")
+		ResponseFail(w, "Invalid page number")
 		return
 	}
 
@@ -49,5 +49,5 @@ func (rc *RedisClient) ListLeaderBoard(w http.ResponseWriter, r *http.Request) {
 			UserName: userData.UserName,
 		}
 	}
-	responseSuccess(w, leaderBoardSlice)
+	ResponseSuccess(w, leaderBoardSlice)
 }

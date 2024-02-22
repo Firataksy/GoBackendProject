@@ -86,6 +86,6 @@ func (rc *RedisClient) Simulation(w http.ResponseWriter, r *http.Request) {
 
 	redisData := rc.redisGetAllUser()
 	allUsers := append(users, redisData...)
-	responseSuccessMessage(w, "")
+	ResponseSuccessMessage(w, "")
 	rc.autoMatch(w, allUsers)
 }
