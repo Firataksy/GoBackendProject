@@ -29,8 +29,8 @@ func (rc *RedisClient) GetUserData(w http.ResponseWriter, r *http.Request) {
 			SurName:  user.SurName,
 		}
 
-		responseSuccess(w, sd)
+		ResponseSuccess(w, sd)
 		return
 	}
-	responseFail(w, "User not found")
+	ResponseFail(w, "User not found")
 }

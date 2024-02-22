@@ -18,7 +18,7 @@ func (rc *RedisClient) Match(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if match.UserID1 == match.UserID2 {
-		responseFail(w, "It cannot be the same in 2 users")
+		ResponseFail(w, "It cannot be the same in 2 users")
 		return
 	}
 
@@ -31,7 +31,7 @@ func (rc *RedisClient) Match(w http.ResponseWriter, r *http.Request) {
 	checkUser2, _ := rc.Client.Get(context.Background(), checkUserName2).Result()
 
 	if checkUser1 == "" || checkUser2 == "" {
-		responseFail(w, "User not found")
+		ResponseFail(w, "User not found")
 		return
 	}
 

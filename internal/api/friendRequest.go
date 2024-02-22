@@ -16,19 +16,19 @@ func (rc *RedisClient) FriendRequest(w http.ResponseWriter, r *http.Request) {
 	userControl, _ := rc.Client.Get(context.Background(), "user:"+userID).Result()
 
 	if userControl == "" {
-		responseFail(w, "User not found")
+		ResponseFail(w, "User not found")
 		return
 	}
 
 	friendControl, _ := rc.Client.ZScore(context.Background(), "friend_"+userID, headerUserID).Result()
 
 	if friendControl == 1 {
-		responseFail(w, "you are already friends")
+		ResponseFail(w, "you are already friends")
 		return
 	}
 
 	if userID == headerUserID {
-		responseFail(w, "You cannot send yourself a friend request.")
+		ResponseFail(w, "You cannot send yourself a friend request.")
 		return
 	}
 
@@ -40,5 +40,5 @@ func (rc *RedisClient) FriendRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rc.Client.ZAdd(context.Background(), "friendrequest_"+userID, *z)
-	responseSuccessMessage(w, "request sent successfully")
+	ResponseSuccessMessage(w, "request sent successfully")
 }

@@ -28,9 +28,9 @@ func (rc *RedisClient) Login(w http.ResponseWriter, r *http.Request) {
 			UserName: userLogin.UserName,
 		}
 
-		responseSuccess(w, sm)
+		ResponseSuccess(w, sm)
 		return
 	}
 
-	responseFail(w, "Wrong username or password")
+	ResponseFail(w, "Wrong username or password")
 }

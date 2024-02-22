@@ -27,7 +27,7 @@ func (rc *RedisClient) RegisterUser() *Sign {
 	return sn
 }
 
-func responseSuccessMessage(w http.ResponseWriter, input interface{}) {
+func ResponseSuccessMessage(w http.ResponseWriter, input interface{}) {
 	w.Header().Add("Content-Type", "application/json")
 	rp := SuccessMessage{
 		Status:  true,
@@ -38,7 +38,7 @@ func responseSuccessMessage(w http.ResponseWriter, input interface{}) {
 	w.Write(response)
 }
 
-func responseSuccess(w http.ResponseWriter, input interface{}) {
+func ResponseSuccess(w http.ResponseWriter, input interface{}) {
 	w.Header().Add("Content-Type", "application/json")
 	rp := Success{
 		Status: true,
@@ -49,7 +49,7 @@ func responseSuccess(w http.ResponseWriter, input interface{}) {
 	w.Write(response)
 }
 
-func responseFail(w http.ResponseWriter, input string) {
+func ResponseFail(w http.ResponseWriter, input string) {
 	w.Header().Add("Content-Type", "application/json")
 	ms := FailMessage{
 		Status:  false,

@@ -25,7 +25,7 @@ func (rc *RedisClient) UpdateUserData(w http.ResponseWriter, r *http.Request) {
 	checkUser, _ := rc.Client.Get(context.Background(), check).Result()
 
 	if checkUser == "" {
-		responseFail(w, "User not found")
+		ResponseFail(w, "User not found")
 		return
 	}
 
@@ -33,14 +33,14 @@ func (rc *RedisClient) UpdateUserData(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal([]byte(checkUser), &updatedUser)
 
 	if updateNewUserData.UserName == userData.UserName {
-		responseFail(w, "You already use this username")
+		ResponseFail(w, "You already use this username")
 		return
 	}
 
 	checkUserID, _ := rc.Client.Get(context.Background(), updateNewUserData.UserName).Result()
 
 	if checkUserID != "" {
-		responseFail(w, "Username is used")
+		ResponseFail(w, "Username is used")
 		return
 	}
 
@@ -69,5 +69,5 @@ func (rc *RedisClient) UpdateUserData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rc.redisSetDataAndID(w, userData)
-	responseSuccess(w, updatedUser)
+	ResponseSuccess(w, updatedUser)
 }
