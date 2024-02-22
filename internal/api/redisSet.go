@@ -27,7 +27,7 @@ func (rc *RedisClient) redisSetUserNameAndID(w http.ResponseWriter, username str
 
 	_, err := rc.Client.Set(context.Background(), "user:"+string(strID), username, 0).Result()
 	if err != nil {
-		log.Fatal("Set User ID err: ", er)
+		log.Fatal("Set User ID err: ", err)
 	}
 
 }
