@@ -19,11 +19,7 @@ func (rc *RedisClient) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	val, err := rc.Client.Get(context.Background(), userLogin.UserName).Result()
-	if err != nil {
-		log.Fatal("login get user data err :", err)
-		return
-	}
+	val, _ := rc.Client.Get(context.Background(), userLogin.UserName).Result()
 
 	err = json.Unmarshal([]byte(val), &user)
 	if err != nil {

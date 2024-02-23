@@ -19,17 +19,8 @@ func (rc *RedisClient) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	UserID, err := rc.Client.Get(context.Background(), "userID:"+userSignUp.UserName).Result()
-	if err != nil {
-		log.Fatal("signup get userID err :", err)
-		return
-	}
-
+	UserID, _ := rc.Client.Get(context.Background(), "userID:"+userSignUp.UserName).Result()
 	check, _ := rc.Client.Get(context.Background(), "player_"+UserID).Result()
-	if err != nil {
-		log.Fatal("signup get user data err :", err)
-		return
-	}
 
 	err = json.Unmarshal([]byte(check), &user)
 	if err != nil {

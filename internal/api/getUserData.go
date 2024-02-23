@@ -21,17 +21,9 @@ func (rc *RedisClient) GetUserData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userName, err := rc.Client.Get(context.Background(), "user:"+headerUserID).Result()
-	if err != nil {
-		log.Fatal("getUserData get username err :", err)
-		return
-	}
+	userName, _ := rc.Client.Get(context.Background(), "user:"+headerUserID).Result()
 
-	val, err := rc.Client.Get(context.Background(), userName).Result()
-	if err != nil {
-		log.Fatal("getUserData get user data err :", err)
-		return
-	}
+	val, _ := rc.Client.Get(context.Background(), userName).Result()
 
 	err = json.Unmarshal([]byte(val), &user)
 	if err != nil {

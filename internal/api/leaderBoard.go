@@ -31,7 +31,6 @@ func (rc *RedisClient) ListLeaderBoard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	leaderBoardList, err := rc.Client.ZRevRangeWithScores(context.Background(), "leaderboard", int64(firstCount), int64(lastCount)).Result()
-
 	if err != nil {
 		log.Fatal("ERR list leaderboard", err)
 		return
@@ -40,17 +39,9 @@ func (rc *RedisClient) ListLeaderBoard(w http.ResponseWriter, r *http.Request) {
 	leaderBoardSlice := make([]UserLeaderBoard, len(leaderBoardList))
 	for i, data := range leaderBoardList {
 
-		s, err := rc.Client.Get(context.Background(), "user:"+data.Member.(string)).Result()
-		if err != nil {
-			log.Fatal("leaderboard get username err :", err)
-			return
-		}
+		s, _ := rc.Client.Get(context.Background(), "user:"+data.Member.(string)).Result()
 
-		data, err := rc.Client.Get(context.Background(), s).Result()
-		if err != nil {
-			log.Fatal("leaderboard get user data err :", err)
-			return
-		}
+		data, _ := rc.Client.Get(context.Background(), s).Result()
 
 		err = json.Unmarshal([]byte(data), &userData)
 		if err != nil {
