@@ -18,11 +18,7 @@ func (rc *RedisClient) UserSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, err := rc.Client.Get(context.Background(), "userID:"+searchedUserName).Result()
-	if err != nil {
-		log.Fatal("userSearch get userID err :", err)
-		return
-	}
+	userID, _ := rc.Client.Get(context.Background(), "userID:"+searchedUserName).Result()
 
 	if userID == "" {
 		ResponseFail(w, "user not found")

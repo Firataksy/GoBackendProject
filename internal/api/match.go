@@ -26,29 +26,13 @@ func (rc *RedisClient) Match(w http.ResponseWriter, r *http.Request) {
 	strUserID1 := strconv.Itoa(match.UserID1)
 	strUserID2 := strconv.Itoa(match.UserID2)
 
-	checkUserName1, err := rc.Client.Get(context.Background(), "user:"+strUserID1).Result()
-	if err != nil {
-		log.Fatal("match get userName control1 err :", err)
-		return
-	}
+	checkUserName1, _ := rc.Client.Get(context.Background(), "user:"+strUserID1).Result()
 
-	checkUserName2, err := rc.Client.Get(context.Background(), "user:"+strUserID2).Result()
-	if err != nil {
-		log.Fatal("match get userName control2 err :", err)
-		return
-	}
+	checkUserName2, _ := rc.Client.Get(context.Background(), "user:"+strUserID2).Result()
 
-	checkUser1, err := rc.Client.Get(context.Background(), checkUserName1).Result()
-	if err != nil {
-		log.Fatal("match get user control1 err :", err)
-		return
-	}
+	checkUser1, _ := rc.Client.Get(context.Background(), checkUserName1).Result()
 
-	checkUser2, err := rc.Client.Get(context.Background(), checkUserName2).Result()
-	if err != nil {
-		log.Fatal("match get user control2 err :", err)
-		return
-	}
+	checkUser2, _ := rc.Client.Get(context.Background(), checkUserName2).Result()
 
 	if checkUser1 == "" || checkUser2 == "" {
 		ResponseFail(w, "User not found")
