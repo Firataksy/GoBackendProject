@@ -43,7 +43,7 @@ func (rc *RedisClient) SignUp(w http.ResponseWriter, r *http.Request) {
 		userSignUp.Token = token
 		rc.redisSetToken(userSignUp)
 
-		sm := TokenUsername{
+		sm := Token{
 			Token:    userSignUp.Token,
 			UserName: userSignUp.UserName,
 		}

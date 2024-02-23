@@ -27,11 +27,9 @@ func (rc *RedisClient) Match(w http.ResponseWriter, r *http.Request) {
 	strUserID2 := strconv.Itoa(match.UserID2)
 
 	checkUserName1, _ := rc.Client.Get(context.Background(), "user:"+strUserID1).Result()
-
 	checkUserName2, _ := rc.Client.Get(context.Background(), "user:"+strUserID2).Result()
 
 	checkUser1, _ := rc.Client.Get(context.Background(), checkUserName1).Result()
-
 	checkUser2, _ := rc.Client.Get(context.Background(), checkUserName2).Result()
 
 	if checkUser1 == "" || checkUser2 == "" {

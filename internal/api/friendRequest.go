@@ -14,10 +14,9 @@ func (rc *RedisClient) FriendRequest(w http.ResponseWriter, r *http.Request) {
 
 	headerUserID := r.Header.Get("userID")
 
-	userControl, _ := rc.Client.Get(context.Background(), "user:"+userID).Result()
-
-	if userControl == "" {
-		ResponseFail(w, "User not found")
+	_, err := rc.Client.Get(context.Background(), "user:"+userID).Result()
+	if err != nil {
+		ResponseFail(w, "user not found")
 		return
 	}
 
