@@ -22,11 +22,13 @@ func (rc *RedisClient) redisSetUserNameAndID(username string, id int) {
 	_, err := rc.Client.Set(context.Background(), "userID:"+username, id, 0).Result()
 	if err != nil {
 		log.Fatal("redis set User ID err: ", err)
+		return
 	}
 
 	_, err = rc.Client.Set(context.Background(), "user:"+string(strID), username, 0).Result()
 	if err != nil {
-		log.Fatal("redis set User ID err: ", err)
+		log.Fatal("redis set Username err: ", err)
+		return
 	}
 
 }

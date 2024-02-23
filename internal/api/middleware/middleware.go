@@ -25,10 +25,6 @@ func TokenMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		if idToken == "" {
-			return
-		}
-
 		r.Header.Set("userID", idToken)
 		next.ServeHTTP(w, r)
 	})

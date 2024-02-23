@@ -30,7 +30,7 @@ func (rc *RedisClient) Login(w http.ResponseWriter, r *http.Request) {
 	userLogin.Password = utils.Md5Encode(userLogin.Password)
 	if user.Pwd == userLogin.Password {
 
-		sm := TokenUsername{
+		sm := Token{
 			Token:    user.Token,
 			UserName: userLogin.UserName,
 		}

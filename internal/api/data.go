@@ -23,7 +23,7 @@ type SuccessData struct {
 	SurName  string `json:"surname"`
 }
 
-type TokenUsername struct {
+type Token struct {
 	Token    string `json:"token"`
 	UserName string `json:"username"`
 }
