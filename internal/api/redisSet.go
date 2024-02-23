@@ -3,38 +3,37 @@ package api
 import (
 	"context"
 	"log"
-	"net/http"
 
 	"github.com/my/repo/internal/utils"
 	"github.com/redis/go-redis/v9"
 )
 
-func (rc *RedisClient) redisSetJustData(w http.ResponseWriter, data *Sign) {
-	jsonData := utils.JsonConvert(w, data)
+func (rc *RedisClient) redisSetJustData(data *Sign) {
+	jsonData := utils.JsonConvert(data)
 
-	_, er := rc.Client.Set(context.Background(), data.UserName, jsonData, 0).Result()
-	if er != nil {
-		log.Fatal("Set User data err: ", er)
-	}
-}
-
-func (rc *RedisClient) redisSetUserNameAndID(w http.ResponseWriter, username string, id int) {
-	strID := utils.JsonConvert(w, id)
-	_, er := rc.Client.Set(context.Background(), "userID:"+username, id, 0).Result()
-	if er != nil {
-		log.Fatal("Set User ID err: ", er)
-	}
-
-	_, err := rc.Client.Set(context.Background(), "user:"+string(strID), username, 0).Result()
+	_, err := rc.Client.Set(context.Background(), data.UserName, jsonData, 0).Result()
 	if err != nil {
-		log.Fatal("Set User ID err: ", err)
+		log.Fatal("redis set User data err: ", err)
+	}
+}
+
+func (rc *RedisClient) redisSetUserNameAndID(username string, id int) {
+	strID := utils.JsonConvert(id)
+	_, err := rc.Client.Set(context.Background(), "userID:"+username, id, 0).Result()
+	if err != nil {
+		log.Fatal("redis set User ID err: ", err)
+	}
+
+	_, err = rc.Client.Set(context.Background(), "user:"+string(strID), username, 0).Result()
+	if err != nil {
+		log.Fatal("redis set User ID err: ", err)
 	}
 
 }
 
-func (rc *RedisClient) redisSetDataAndID(w http.ResponseWriter, data *Sign) {
-	rc.redisSetJustData(w, data)
-	rc.redisSetUserNameAndID(w, data.UserName, data.ID)
+func (rc *RedisClient) redisSetDataAndID(data *Sign) {
+	rc.redisSetJustData(data)
+	rc.redisSetUserNameAndID(data.UserName, data.ID)
 }
 
 func (rc *RedisClient) redisSetLeaderBoard(user *Sign) {

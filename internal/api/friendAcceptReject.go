@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -30,9 +31,13 @@ func (rc *RedisClient) FriendAcceptReject(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	value, _ := rc.Client.ZScore(context.Background(), "friendrequest_"+headerUserID, strID).Result()
+	friendRequestControl, err := rc.Client.ZScore(context.Background(), "friendrequest_"+headerUserID, strID).Result()
+	if err != nil {
+		log.Fatal("friendAcceptReject request control err :", err)
+		return
+	}
 
-	if acceptReject.Status == "accept" && value != 0.0 {
+	if acceptReject.Status == "accept" && friendRequestControl != 0.0 {
 
 		rc.Client.ZAdd(context.Background(), "friend_"+headerUserID, redis.Z{
 			Member: strID,
@@ -51,7 +56,7 @@ func (rc *RedisClient) FriendAcceptReject(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if acceptReject.Status == "reject" && value != 0.0 {
+	if acceptReject.Status == "reject" && friendRequestControl != 0.0 {
 
 		rc.Client.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)
 
