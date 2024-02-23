@@ -40,9 +40,17 @@ func (rc *RedisClient) FriendRequestList(w http.ResponseWriter, r *http.Request)
 	friendRequestSlice := make([]FriendRequestList, len(friendRequestList))
 
 	for i, requestList := range friendRequestList {
-		data, _ := rc.Client.Get(context.Background(), "user:"+requestList.Member.(string)).Result()
+		data, err := rc.Client.Get(context.Background(), "user:"+requestList.Member.(string)).Result()
+		if err != nil {
+			log.Fatal("friendRequestList get user data err :", err)
+			return
+		}
 
-		intID, _ := strconv.Atoi(requestList.Member.(string))
+		intID, err := strconv.Atoi(requestList.Member.(string))
+		if err != nil {
+			log.Fatal("friendRequestList convert err :", err)
+			return
+		}
 
 		friendRequestSlice[i] = FriendRequestList{
 			ID:       intID,

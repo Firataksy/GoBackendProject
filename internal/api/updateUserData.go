@@ -70,6 +70,6 @@ func (rc *RedisClient) UpdateUserData(w http.ResponseWriter, r *http.Request) {
 		updatedUser.SurName = updateNewUserData.SurName
 	}
 
-	rc.redisSetDataAndID(w, userData)
+	rc.redisSetDataAndID(userData)
 	ResponseSuccess(w, updatedUser)
 }

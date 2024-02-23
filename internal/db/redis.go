@@ -22,7 +22,7 @@ func New(addr string) (*RedisClient, error) {
 
 	_, err := client.Ping(context.Background()).Result()
 	if err != nil {
-		fmt.Println("PING")
+		fmt.Println("redis ping err :", err)
 		return nil, err
 	}
 	rc := &RedisClient{Client: client}

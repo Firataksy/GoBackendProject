@@ -34,7 +34,7 @@ func ResponseSuccessMessage(w http.ResponseWriter, input interface{}) {
 		Message: input,
 	}
 
-	response := utils.JsonConvert(w, rp)
+	response := utils.JsonConvert(rp)
 	w.Write(response)
 }
 
@@ -45,7 +45,7 @@ func ResponseSuccess(w http.ResponseWriter, input interface{}) {
 		Data:   input,
 	}
 
-	response := utils.JsonConvert(w, rp)
+	response := utils.JsonConvert(rp)
 	w.Write(response)
 }
 
@@ -56,7 +56,7 @@ func ResponseFail(w http.ResponseWriter, input string) {
 		Message: input,
 	}
 
-	response := utils.JsonConvert(w, ms)
+	response := utils.JsonConvert(ms)
 	w.Write(response)
 }
 

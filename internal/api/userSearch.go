@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -17,7 +18,11 @@ func (rc *RedisClient) UserSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, _ := rc.Client.Get(context.Background(), "userID:"+searchedUserName).Result()
+	userID, err := rc.Client.Get(context.Background(), "userID:"+searchedUserName).Result()
+	if err != nil {
+		log.Fatal("userSearch get userID err :", err)
+		return
+	}
 
 	if userID == "" {
 		ResponseFail(w, "user not found")
@@ -28,7 +33,13 @@ func (rc *RedisClient) UserSearch(w http.ResponseWriter, r *http.Request) {
 		ResponseFail(w, "you can not search yourself")
 		return
 	}
-	intID, _ := strconv.Atoi(userID)
+
+	intID, err := strconv.Atoi(userID)
+	if err != nil {
+		log.Fatal("userSearch convert err :", err)
+		return
+	}
+
 	userSearch := UserSearchID{
 		ID: intID,
 	}

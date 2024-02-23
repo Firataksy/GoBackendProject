@@ -4,8 +4,8 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
-	"net/http"
 )
 
 func Md5Encode(input string) string {
@@ -24,10 +24,10 @@ func RandStringRunes(n int) string {
 	return string(b)
 }
 
-func JsonConvert(w http.ResponseWriter, input interface{}) []byte {
+func JsonConvert(input interface{}) []byte {
 	Json, err := json.Marshal(input)
 	if err != nil {
-		http.Error(w, "Json Error", http.StatusInternalServerError)
+		log.Fatal("json marshal err: ", err)
 		return nil
 	}
 	return Json

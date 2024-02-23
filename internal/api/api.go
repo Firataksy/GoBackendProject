@@ -11,16 +11,6 @@ type RedisClient struct {
 	Client *redis.Client
 }
 
-type Api struct {
-	Rdb *RedisClient
-}
-
-func NewApi(redisClient *redis.Client) *Api {
-	return &Api{
-		Rdb: &RedisClient{Client: redisClient},
-	}
-}
-
 func ConnectRedis() (*RedisClient, error) {
 	rc, err := db.New("localhost:6379")
 	if err != nil {

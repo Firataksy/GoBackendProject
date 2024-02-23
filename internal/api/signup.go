@@ -19,9 +19,24 @@ func (rc *RedisClient) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	UserID, _ := rc.Client.Get(context.Background(), "userID:"+userSignUp.UserName).Result()
+	UserID, err := rc.Client.Get(context.Background(), "userID:"+userSignUp.UserName).Result()
+	if err != nil {
+		log.Fatal("signup get userID err :", err)
+		return
+	}
+
 	check, _ := rc.Client.Get(context.Background(), "player_"+UserID).Result()
-	json.Unmarshal([]byte(check), &user)
+	if err != nil {
+		log.Fatal("signup get user data err :", err)
+		return
+	}
+
+	err = json.Unmarshal([]byte(check), &user)
+	if err != nil {
+		log.Fatal("signup unmarshal err :", err)
+		return
+	}
+
 	if user.UserName == userSignUp.UserName {
 		ResponseFail(w, "Username is used")
 		return
@@ -42,8 +57,9 @@ func (rc *RedisClient) SignUp(w http.ResponseWriter, r *http.Request) {
 			UserName: userSignUp.UserName,
 		}
 
-		rc.redisSetJustData(w, userSignUp)
-		rc.redisSetUserNameAndID(w, userSignUp.UserName, int(id))
+		rc.redisSetJustData(userSignUp)
+		rc.redisSetLeaderBoard(userSignUp)
+		rc.redisSetUserNameAndID(userSignUp.UserName, int(id))
 
 		ResponseSuccess(w, sm)
 		return

@@ -19,11 +19,21 @@ func (rc *RedisClient) redisGetAllUser() []*Sign {
 
 	allUser := make([]*Sign, len(users))
 	for i, data := range users {
-		userName, _ := rc.Client.Get(context.Background(), "user:"+data).Result()
-		data, _ := rc.Client.Get(context.Background(), userName).Result()
-		err := json.Unmarshal([]byte(data), &user)
+		userName, err := rc.Client.Get(context.Background(), "user:"+data).Result()
 		if err != nil {
-			log.Fatal("Unmarshal err: ", err)
+			log.Fatal("simulation get username err :", err)
+			return nil
+		}
+
+		data, err := rc.Client.Get(context.Background(), userName).Result()
+		if err != nil {
+			log.Fatal("simulation get user data err :", err)
+			return nil
+		}
+
+		err = json.Unmarshal([]byte(data), &user)
+		if err != nil {
+			log.Fatal("simulation unmarshal err: ", err)
 		}
 
 		allUser[i] = &Sign{
@@ -53,13 +63,13 @@ func (rc *RedisClient) autoMatch(w http.ResponseWriter, users []*Sign) {
 				match.Score1 = rand.Intn(5)
 				match.Score2 = rand.Intn(5)
 				if match.Score1 > match.Score2 {
-					rc.win(w, user1)
+					rc.win(user1)
 				}
 				if match.Score1 < match.Score2 {
-					rc.win(w, user2)
+					rc.win(user2)
 				}
 				if match.Score1 == match.Score2 {
-					rc.draw(w, user1, user2)
+					rc.draw(user1, user2)
 				}
 			}
 		}
@@ -80,7 +90,7 @@ func (rc *RedisClient) Simulation(w http.ResponseWriter, r *http.Request) {
 
 		users[i] = ru
 
-		rc.redisSetDataAndID(w, ru)
+		rc.redisSetDataAndID(ru)
 		defer rc.redisSetLeaderBoard(ru)
 	}
 
