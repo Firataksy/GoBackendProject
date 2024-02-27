@@ -1,5 +1,11 @@
 package api
 
+import "github.com/redis/go-redis/v9"
+
+type RedisClient struct {
+	Client *redis.Client
+}
+
 type Sign struct {
 	Token    string `json:"token"`
 	ID       int    `json:"id"`

@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"time"
 
@@ -20,11 +19,7 @@ func (rc *RedisClient) FriendRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	friendControl, err := rc.Client.ZScore(context.Background(), "friend_"+userID, headerUserID).Result()
-	if err != nil {
-		log.Fatal("friendRequest friend control err :", err)
-		return
-	}
+	friendControl, _ := rc.Client.ZScore(context.Background(), "friend_"+userID, headerUserID).Result()
 
 	if friendControl == 1 {
 		ResponseFail(w, "you are already friends")
