@@ -87,8 +87,9 @@ type LeaderBoard struct {
 }
 
 type UserLeaderBoard struct {
-	UserName string `json:"username"`
+	Rank     int    `json:"rank"`
 	UserID   int    `json:"id"`
+	UserName string `json:"username"`
 	Score    int    `json:"score"`
 }
 

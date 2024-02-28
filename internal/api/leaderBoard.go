@@ -50,6 +50,7 @@ func (rc *RedisClient) ListLeaderBoard(w http.ResponseWriter, r *http.Request) {
 		}
 
 		leaderBoardSlice[i] = UserLeaderBoard{
+			Rank:     i + 1,
 			UserID:   userData.UserID,
 			Score:    userData.Score,
 			UserName: userData.UserName,

@@ -39,6 +39,7 @@ func (rc *RedisClient) Match(w http.ResponseWriter, r *http.Request) {
 
 	if checkUser2 == "" {
 		ResponseFail(w, "user 2 not found")
+		return
 	}
 
 	if match.Score1 > match.Score2 {
