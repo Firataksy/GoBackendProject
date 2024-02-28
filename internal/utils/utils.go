@@ -34,7 +34,7 @@ func JsonConvert(input interface{}) []byte {
 }
 
 func GenerateToken() string {
-	token := make([]byte, 8)
+	token := make([]byte, 16)
 	rand.Read(token)
 	return fmt.Sprintf("%x", token)
 }
