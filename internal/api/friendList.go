@@ -40,10 +40,7 @@ func (rc *RedisClient) FriendList(w http.ResponseWriter, r *http.Request) {
 	friendSlice := make([]FriendRequestList, len(friendList))
 
 	for i, data := range friendList {
-		userName, err := rc.Client.Get(context.Background(), "user:"+data.Member.(string)).Result()
-		if err != nil {
-			log.Fatal("friendlist get username err :", err)
-		}
+		userName, _ := rc.Client.Get(context.Background(), "user:"+data.Member.(string)).Result()
 
 		intID, _ := strconv.Atoi(data.Member.(string))
 
