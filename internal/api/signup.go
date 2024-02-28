@@ -19,10 +19,9 @@ func (rc *RedisClient) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// UserID, _ := rc.Client.Get(context.Background(), "userID:"+userSignUp.UserName).Result()
-	check, _ := rc.Client.Get(context.Background(), userSignUp.UserName).Result()
+	checkUser, _ := rc.Client.Get(context.Background(), userSignUp.UserName).Result()
 
-	json.Unmarshal([]byte(check), &user)
+	json.Unmarshal([]byte(checkUser), &user)
 
 	if userSignUp.UserName == "" {
 		ResponseFail(w, "Information cannot be empty")
