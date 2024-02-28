@@ -19,12 +19,13 @@ func (rc *RedisClient) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	UserID, _ := rc.Client.Get(context.Background(), "userID:"+userSignUp.UserName).Result()
-	check, _ := rc.Client.Get(context.Background(), "player_"+UserID).Result()
+	// UserID, _ := rc.Client.Get(context.Background(), "userID:"+userSignUp.UserName).Result()
+	check, _ := rc.Client.Get(context.Background(), userSignUp.UserName).Result()
 
-	err = json.Unmarshal([]byte(check), &user)
-	if err != nil {
-		log.Fatal("signup unmarshal err :", err)
+	json.Unmarshal([]byte(check), &user)
+
+	if userSignUp.UserName == "" {
+		ResponseFail(w, "Information cannot be empty")
 		return
 	}
 
@@ -55,7 +56,6 @@ func (rc *RedisClient) SignUp(w http.ResponseWriter, r *http.Request) {
 		ResponseSuccess(w, sm)
 		return
 	}
-	ResponseFail(w, "Information cannot be empty")
 }
 
 func (rc *RedisClient) redisSetToken(sign *Sign) {

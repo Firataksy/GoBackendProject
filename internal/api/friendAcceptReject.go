@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -33,7 +32,7 @@ func (rc *RedisClient) FriendAcceptReject(w http.ResponseWriter, r *http.Request
 
 	friendRequestControl, err := rc.Client.ZScore(context.Background(), "friendrequest_"+headerUserID, strID).Result()
 	if err != nil {
-		log.Fatal("friendAcceptReject request control err :", err)
+		ResponseFail(w, "you don't have a friend request")
 		return
 	}
 

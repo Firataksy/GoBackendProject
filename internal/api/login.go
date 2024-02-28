@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/my/repo/internal/utils"
@@ -21,14 +20,10 @@ func (rc *RedisClient) Login(w http.ResponseWriter, r *http.Request) {
 
 	val, _ := rc.Client.Get(context.Background(), userLogin.UserName).Result()
 
-	err = json.Unmarshal([]byte(val), &user)
-	if err != nil {
-		log.Fatal("login unmarshal err :", err)
-		return
-	}
+	json.Unmarshal([]byte(val), &user)
 
 	userLogin.Password = utils.Md5Encode(userLogin.Password)
-	if user.Pwd == userLogin.Password {
+	if user.Pwd == userLogin.Password && userLogin.UserName == user.UserName {
 
 		sm := Token{
 			Token:    user.Token,
