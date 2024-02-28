@@ -21,7 +21,7 @@ func (rc *RedisClient) FriendRequest(w http.ResponseWriter, r *http.Request) {
 
 	friendControl, _ := rc.Client.ZScore(context.Background(), "friend_"+userID, headerUserID).Result()
 
-	if friendControl == 1 {
+	if friendControl != 0 {
 		ResponseFail(w, "you are already friends")
 		return
 	}

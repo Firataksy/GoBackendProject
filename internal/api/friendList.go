@@ -26,30 +26,31 @@ func (rc *RedisClient) FriendList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	friendList, err := rc.Client.ZRange(context.Background(), "friend_"+headerUserID, int64(firstCount), int64(lastCount)).Result()
+	friendList, err := rc.Client.ZRangeWithScores(context.Background(), "friend_"+headerUserID, int64(firstCount), int64(lastCount)).Result()
 	if err != nil {
 		log.Fatal("ERR list friend request list", err)
 		return
 	}
 
 	if len(friendList) == 0 {
-		ResponseFail(w, "you don't have a friend")
+		ResponseFail(w, "you don't have any friends, how about adding a friend?")
 		return
 	}
 
-	friendSlice := make([]FriendList, len(friendList))
+	friendSlice := make([]FriendRequestList, len(friendList))
 
-	for i, ID := range friendList {
-		data, err := rc.Client.Get(context.Background(), "user:"+ID).Result()
+	for i, data := range friendList {
+		userName, err := rc.Client.Get(context.Background(), "user:"+data.Member.(string)).Result()
 		if err != nil {
 			log.Fatal("friendlist get username err :", err)
 		}
 
-		intID, _ := strconv.Atoi(ID)
+		intID, _ := strconv.Atoi(data.Member.(string))
 
-		friendSlice[i] = FriendList{
+		friendSlice[i] = FriendRequestList{
 			ID:       intID,
-			UserName: data,
+			UserName: userName,
+			Date:     data.Score,
 		}
 	}
 	ResponseSuccess(w, friendSlice)

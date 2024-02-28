@@ -102,11 +102,6 @@ type FriendRequestList struct {
 	Date     float64 `json:"date"`
 }
 
-type FriendList struct {
-	ID       int    `json:"id"`
-	UserName string `json:"username"`
-}
-
 type UserSearchID struct {
 	ID int `json:"id"`
 }

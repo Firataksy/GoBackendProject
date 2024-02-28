@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -38,14 +39,17 @@ func (rc *RedisClient) FriendAcceptReject(w http.ResponseWriter, r *http.Request
 
 	if acceptReject.Status == "accept" && friendRequestControl != 0.0 {
 
+		date := time.Now()
+		unixDate := int(date.Unix())
+
 		rc.Client.ZAdd(context.Background(), "friend_"+headerUserID, redis.Z{
 			Member: strID,
-			Score:  1,
+			Score:  float64(unixDate),
 		}).Result()
 
 		rc.Client.ZAdd(context.Background(), "friend_"+strID, redis.Z{
 			Member: headerUserID,
-			Score:  1,
+			Score:  float64(unixDate),
 		}).Result()
 
 		rc.Client.ZRem(context.Background(), "friendrequest_"+headerUserID, strID)
