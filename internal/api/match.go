@@ -32,9 +32,13 @@ func (rc *RedisClient) Match(w http.ResponseWriter, r *http.Request) {
 	checkUser1, _ := rc.Client.Get(context.Background(), checkUserName1).Result()
 	checkUser2, _ := rc.Client.Get(context.Background(), checkUserName2).Result()
 
-	if checkUser1 == "" || checkUser2 == "" {
-		ResponseFail(w, "User not found")
+	if checkUser1 == "" {
+		ResponseFail(w, "user 1 not found")
 		return
+	}
+
+	if checkUser2 == "" {
+		ResponseFail(w, "user 2 not found")
 	}
 
 	if match.Score1 > match.Score2 {
