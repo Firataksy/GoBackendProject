@@ -19,13 +19,13 @@ func TokenMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		idToken, err := rc.Client.Get(context.Background(), "token:"+token).Result()
+		tokenID, err := rc.Client.Get(context.Background(), "token:"+token).Result()
 		if err != nil {
 			api.ResponseFail(w, "Invalid Token")
 			return
 		}
 
-		r.Header.Set("userID", idToken)
+		r.Header.Set("userID", tokenID)
 		next.ServeHTTP(w, r)
 	})
 }
