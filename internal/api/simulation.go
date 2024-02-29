@@ -50,7 +50,7 @@ func (rc *RedisClient) redisGetAllUser() []*Sign {
 	return allUser
 }
 
-func (rc *RedisClient) autoMatch(w http.ResponseWriter, users []*Sign) {
+func (rc *RedisClient) autoMatch(users []*Sign) {
 	var match Match
 
 	for i := 0; i < len(users); i++ {
@@ -97,5 +97,5 @@ func (rc *RedisClient) Simulation(w http.ResponseWriter, r *http.Request) {
 	redisData := rc.redisGetAllUser()
 	allUsers := append(users, redisData...)
 	ResponseSuccessMessage(w, "")
-	rc.autoMatch(w, allUsers)
+	rc.autoMatch(allUsers)
 }
